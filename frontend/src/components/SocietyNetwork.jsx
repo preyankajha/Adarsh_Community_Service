@@ -10,7 +10,7 @@ const SocietyNetwork = () => {
     useEffect(() => {
         api.getCommunities()
             .then(res => {
-                setSocieties(res.data);
+                setSocieties(Array.isArray(res.data) ? res.data : []);
                 setLoading(false);
             })
             .catch(err => {
