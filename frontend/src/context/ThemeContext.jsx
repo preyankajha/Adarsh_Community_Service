@@ -5,8 +5,8 @@ const ThemeContext = createContext();
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
-    // Locked Theme for Jagdamba Samiti
-    const [themeMode, setThemeMode] = useState('jagdamba');
+    // Locked Theme for Sanatan Swabhiman Samiti
+    const [themeMode, setThemeMode] = useState('samiti');
     const [primaryColor, setPrimaryColor] = useState('#E65100'); // Saffron Dark
     const [fontSize, setFontSize] = useState('normal');
     const [fontFamily, setFontFamily] = useState("'Outfit', sans-serif"); // Clean modern font
@@ -16,8 +16,8 @@ export const ThemeProvider = ({ children }) => {
     useEffect(() => {
         const root = document.documentElement;
 
-        // Force Jagdamba Theme Class
-        document.body.className = 'jagdamba-theme';
+        // Force Samiti Theme Class
+        document.body.className = 'samiti-theme';
 
         // Apply CSS Variables
         root.style.setProperty('--primary-blue', primaryColor); // Overridden by CSS class but kept for sync

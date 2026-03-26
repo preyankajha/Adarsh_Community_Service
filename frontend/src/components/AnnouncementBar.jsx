@@ -59,7 +59,7 @@ const AnnouncementBar = () => {
                     ))
                 ) : (
                     <>
-                        <span style={{ fontWeight: 700 }}>🔔 Welcome to Maa Jagdamba Samiti Digital Platform</span>
+                        <span style={{ fontWeight: 700 }}>🔔 Welcome to Sanatani Swayamsevi Samiti Digital Platform</span>
                         <span style={{ fontWeight: 700 }}>🤝 Transparency, Equality and Collective Growth</span>
                         <span style={{ fontWeight: 700 }}>🌟 Connect with us for a better community</span>
                     </>

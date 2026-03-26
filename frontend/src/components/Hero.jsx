@@ -47,129 +47,160 @@ const Hero = () => {
 
 
     return (
-        <section id="home" className="hero-section">
-            <div className="hero-overlay"></div>
-            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 2, flexWrap: 'wrap', gap: '40px' }}>
-
-                {/* LEFT SIDE: Welcome & Intro */}
-                <div className="hero-content-left" style={{ flex: '1.5', minWidth: '300px', textAlign: 'left' }}>
-                    <div className="motto-box">
-                        <span>🕉 {t.hero.motto}</span>
-                    </div>
-                    <h3 style={{ fontSize: '3.5rem', marginBottom: '20px', color: '#2C3E50', lineHeight: 1.1, fontWeight: 800 }}>
-                        {t.hero.welcome}
-                    </h3>
-                    <p style={{ fontSize: '1.3rem', color: '#546E7A', marginBottom: '30px', fontWeight: 500 }}>
-                        {t.hero.message1} <br />
-                        {t.hero.message2}
-                    </p>
-
-                    {/* Trust Indicators (Moved nicely below text) */}
-                    <div className="trust-strip" style={{ justifyContent: 'flex-start', marginTop: '20px' }}>
-                        <div className="trust-item" style={{ textAlign: 'left', marginRight: '30px' }}>
-                            <span className="trust-number" style={{ display: 'block', fontSize: '1.8rem', fontWeight: 'bold', color: '#2E7D32' }}>{counts.families}+</span>
-                            <span className="trust-label" style={{ color: '#666' }}>Active Families</span>
+        <section id="home" className="hero-section" style={{ padding: '100px 0', minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
+            <div className="hero-overlay" style={{ opacity: 0.05 }}></div>
+            <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '60px', alignItems: 'center' }}>
+                    
+                    {/* LEFT SIDE: Platform Value Prop */}
+                    <div className="hero-content-left" style={{ textAlign: 'left' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
+                            <div style={{ 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                background: 'rgba(52, 152, 219, 0.1)', 
+                                padding: '8px 16px', 
+                                borderRadius: '100px', 
+                                color: 'var(--primary-blue)', 
+                                fontWeight: 800, 
+                                fontSize: '0.85rem',
+                                border: '1px solid rgba(52, 152, 219, 0.2)'
+                            }}>
+                                <span style={{ fontSize: '1.2rem' }}>⚡</span> THE COMPLETE SOCIETY GOVERNANCE SUITE
+                            </div>
+                            <div style={{ 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                background: '#F8FAFC', 
+                                padding: '8px 16px', 
+                                borderRadius: '100px', 
+                                color: '#64748B', 
+                                fontWeight: 700, 
+                                fontSize: '0.85rem',
+                                border: '1px solid #E2E8F0',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                            }}>
+                                <span>Designed by</span> <span style={{ color: '#1E293B', fontWeight: 800 }}>Priyanka Digitech Services</span>
+                            </div>
                         </div>
-                        <div className="trust-item" style={{ textAlign: 'left', marginRight: '30px' }}>
-                            <span className="trust-number" style={{ display: 'block', fontSize: '1.8rem', fontWeight: 'bold', color: '#2E7D32' }}>₹ {counts.funds.toLocaleString()}</span>
-                            <span className="trust-label" style={{ color: '#666' }}>Assistance Provided</span>
+                        
+                        <h1 style={{ 
+                            fontSize: '4.5rem', 
+                            fontWeight: 950, 
+                            color: '#1E293B', 
+                            lineHeight: 1, 
+                            marginBottom: '24px', 
+                            letterSpacing: '-2px' 
+                        }}>
+                            The Ultimate <br />
+                            <span style={{ color: 'var(--accent-blue)' }}>Governance Suite.</span>
+                        </h1>
+                        
+                        <p style={{ 
+                            fontSize: '1.25rem', 
+                            color: '#64748B', 
+                            lineHeight: 1.6, 
+                            marginBottom: '40px', 
+                            fontWeight: 500,
+                            maxWidth: '600px'
+                        }}>
+                            Adarsh Society Service provides a transparent, secure, and highly efficient platform to manage community funds, member assistance, and digital governance for modern residential and cultural samitis.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                            <button 
+                                onClick={() => navigate('/register-society')}
+                                className="premium-btn shadow-premium" 
+                                style={{ padding: '20px 40px', fontSize: '1.1rem' }}
+                            >
+                                Launch Your Society Portal
+                            </button>
+                            <button 
+                                onClick={() => navigate('/login')}
+                                style={{ 
+                                    padding: '20px 40px', 
+                                    fontSize: '1.1rem', 
+                                    background: 'white', 
+                                    border: '1px solid #E2E8F0', 
+                                    borderRadius: '16px', 
+                                    color: '#1E293B', 
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseOver={e => e.currentTarget.style.background = '#F8FAFC'}
+                                onMouseOut={e => e.currentTarget.style.background = 'white'}
+                            >
+                                Member Login 
+                            </button>
+                        </div>
+
+                        <div style={{ marginTop: '50px', display: 'flex', gap: '40px', borderTop: '1px solid #F1F5F9', paddingTop: '30px' }}>
+                            <div>
+                                <h4 style={{ margin: 0, fontSize: '1.8rem', color: '#1E293B', fontWeight: 900 }}>100%</h4>
+                                <p style={{ margin: 0, color: '#94A3B8', fontWeight: 700, fontSize: '0.85rem' }}>TRANSPARENT</p>
+                            </div>
+                            <div>
+                                <h4 style={{ margin: 0, fontSize: '1.8rem', color: '#1E293B', fontWeight: 900 }}>Real-Time</h4>
+                                <p style={{ margin: 0, color: '#94A3B8', fontWeight: 700, fontSize: '0.85rem' }}>MONITORING</p>
+                            </div>
+                            <div>
+                                <h4 style={{ margin: 0, fontSize: '1.8rem', color: '#1E293B', fontWeight: 900 }}>Founder</h4>
+                                <p style={{ margin: 0, color: '#94A3B8', fontWeight: 700, fontSize: '0.85rem' }}>DEDICATED PANEL</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* RIGHT SIDE: Login / Register Actions */}
-                <div className="hero-auth-right" style={{ flex: '1', minWidth: '320px', display: 'flex', justifyContent: 'center' }}>
-                    {(() => {
-                        const user = getAuthUser();
-                        if (user) {
-                            return (
-                                <div style={{
-                                    background: 'rgba(255, 255, 255, 0.7)',
-                                    padding: '40px',
-                                    borderRadius: '24px',
-                                    boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
-                                    backdropFilter: 'blur(12px)',
-                                    border: '1px solid rgba(255,255,255,0.4)',
-                                    width: '100%',
-                                    maxWidth: '440px',
-                                    textAlign: 'center'
-                                }}>
-                                    <div style={{ fontSize: '3rem', marginBottom: '20px' }}>👋</div>
-                                    <h4 style={{ fontSize: '1.8rem', color: '#2C3E50', marginBottom: '10px', fontWeight: 800 }}>Welcome Back, {(user.name || 'User').split(' ')[0]}!</h4>
-                                    <p style={{ marginBottom: '30px', color: '#546E7A', fontWeight: 500, lineHeight: '1.5' }}>
-                                        You are currently logged in as <br />
-                                        <span style={{ fontWeight: 800, color: '#FF9933' }}>
-                                            {String((user?.position && user?.position !== 'none') ? user.position : (user?.role || 'User')).replace(/_/g, ' ').toUpperCase()}
-                                        </span>
-                                    </p>
-                                    <button
-
-                                        onClick={() => {
-                                            const role = (user.role || '').toLowerCase();
-                                            const pos = (user.position || '').toLowerCase();
-                                            const committeePositions = ['admin', 'super_admin', 'president', 'vice_president', 'secretary', 'joint_secretary', 'treasurer', 'executive_member', 'auditor', 'pro', 'legal_advisor', 'medical_advisor', 'coordinator'];
-
-                                            const isExecutive = committeePositions.includes(role) || (pos && pos !== 'none' && committeePositions.includes(pos));
-
-                                            if (isExecutive) {
-                                                navigate('/admin');
-                                            } else if (role === 'family_head') {
-                                                navigate('/family');
-                                            } else {
-                                                navigate('/member');
-                                            }
-                                        }}
-                                        className="btn-pulse"
-                                        style={{
-                                            width: '100%',
-                                            padding: '18px',
-                                            background: 'linear-gradient(135deg, var(--primary-saffron) 0%, var(--saffron-dark) 100%)',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '12px',
-                                            fontSize: '1.1rem',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            boxShadow: '0 10px 20px rgba(255, 153, 51, 0.3)',
-                                            marginBottom: '15px'
-                                        }}
-                                    >
-                                        {(() => {
-                                            const isExecutive = ['admin', 'super_admin', 'president', 'vice_president', 'secretary', 'joint_secretary', 'treasurer', 'executive_member', 'auditor', 'pro'].includes(user.role) || (user.position && user.position !== 'none');
-                                            if (isExecutive) return "Access Management Dashboard";
-                                            if (user.role === 'family_head') return "Access Family Dashboard";
-                                            return "Access Member Dashboard";
-                                        })()}
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            localStorage.removeItem('token');
-                                            localStorage.removeItem('user');
-                                            window.location.reload();
-                                        }}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            color: '#666',
-                                            textDecoration: 'underline',
-                                            cursor: 'pointer',
-                                            fontSize: '0.9rem'
-                                        }}
-                                    >
-                                        Logout / Switch Account
-                                    </button>
+                    {/* RIGHT SIDE: Product Illustration / Dashboard Demo */}
+                    <div className="hero-auth-right" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+                        <div className="animate-float" style={{ 
+                            background: 'white', 
+                            padding: '10px', 
+                            borderRadius: '30px', 
+                            boxShadow: '0 40px 100px rgba(0,0,0,0.1)',
+                            border: '1px solid #F1F5F9',
+                            width: '100%',
+                            position: 'relative'
+                        }}>
+                             <div style={{ 
+                                background: '#F8FAFC', 
+                                height: '400px', 
+                                borderRadius: '22px', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                fontSize: '1rem', 
+                                color: '#94A3B8', 
+                                fontWeight: 600,
+                                textAlign: 'center',
+                                padding: '40px',
+                                background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)'
+                             }}>
+                                <div>
+                                    <div style={{ fontSize: '4rem', marginBottom: '20px' }}>📊</div>
+                                    <h3 style={{ color: '#1E293B', fontSize: '1.5rem', fontWeight: 900, marginBottom: '10px' }}>Interactive Governance</h3>
+                                    <p>One unified dashboard to track <br/> Assistances, Nominees, and Elections.</p>
                                 </div>
-                            );
-                        } else {
-                            // Show Embedded Login Card
-                            return <LoginCard isEmbedded={true} />;
-                        }
-                    })()}
-                </div>
+                             </div>
+                             
+                             {/* Floating Elements */}
+                             <div style={{ position: 'absolute', top: '-30px', right: '-20px', background: 'white', padding: '15px 25px', borderRadius: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }}></div>
+                                <span style={{ fontWeight: 800, color: '#1E293B', fontSize: '0.9rem' }}>Live Audit Trail Active</span>
+                             </div>
 
+                             <div style={{ position: 'absolute', bottom: '40px', left: '-40px', background: '#2C3E50', padding: '15px 25px', borderRadius: '15px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', color: 'white' }}>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.7, marginBottom: '4px' }}>FOUNDER STATUS</div>
+                                <div style={{ fontWeight: 900, fontSize: '1.1rem', letterSpacing: '1px' }}>🛡️ VERIFIED</div>
+                             </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </section >
+        </section>
     );
 };
 

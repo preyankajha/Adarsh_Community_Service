@@ -26,22 +26,16 @@ const Header = () => {
                     </div>
                 );
                 break;
-            case 'objectives':
-                title = t.objectives.title;
+            case 'services':
+                title = t.services.title;
                 content = (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                        <div>
-                            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '10px' }}>{t.objectives.emergency.title}</h4>
-                            <ul style={{ paddingLeft: '20px' }}>
-                                {t.objectives.emergency.items.map((item, i) => <li key={i}>{item}</li>)}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style={{ color: 'var(--primary-blue)', marginBottom: '10px' }}>{t.objectives.education.title}</h4>
-                            <ul style={{ paddingLeft: '20px' }}>
-                                {t.objectives.education.items.map((item, i) => <li key={i}>{item}</li>)}
-                            </ul>
-                        </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                        {t.services.items.map((service, i) => (
+                            <div key={i} style={{ padding: '15px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                <h4 style={{ color: 'var(--primary-blue)', marginBottom: '8px', fontWeight: 800 }}>{service.title}</h4>
+                                <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.5, margin: 0 }}>{service.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 );
                 break;
@@ -75,7 +69,7 @@ const Header = () => {
     };
 
     return (
-        <>
+        <>{/* ... existing code ... */}
             <header className="site-header">
                 <div className="container">
                     <div className="logo-area" onClick={() => handleNavigation('/')} style={{ cursor: 'pointer' }}>
@@ -93,15 +87,27 @@ const Header = () => {
                         <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
                             <li><a href="/" onClick={(e) => { e.preventDefault(); handleNavigation('/'); }}>{t.header.nav.home}</a></li>
                             <li><a href="#about" onClick={(e) => { e.preventDefault(); openModal('about'); }}>{t.header.nav.about}</a></li>
-                            <li><a href="#objectives" onClick={(e) => { e.preventDefault(); openModal('objectives'); }}>{t.header.nav.objectives}</a></li>
+                            <li><a href="#services" onClick={(e) => { e.preventDefault(); openModal('services'); }}>{t.header.nav.services}</a></li>
                             <li><a href="#membership" onClick={(e) => { e.preventDefault(); openModal('membership'); }}>{t.header.nav.membership}</a></li>
                             <li><a href="#contact" onClick={(e) => { e.preventDefault(); openModal('contact'); }}>{t.header.nav.contact}</a></li>
+                            <li><a href="/#network" onClick={(e) => { 
+                                if (window.location.pathname === '/') {
+                                    e.preventDefault();
+                                    document.getElementById('network')?.scrollIntoView({ behavior: 'smooth' });
+                                }
+                                setIsMenuOpen(false);
+                            }}>{t.header.nav.network}</a></li>
 
                             <li className="action-buttons-container">
                                 {(() => {
                                     const u = getAuthUser();
                                     if (!u) {
-                                        return <button onClick={() => handleNavigation('/login')} className="nav-btn-filled">Login</button>;
+                                        return (
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button onClick={() => handleNavigation('/register-society')} className="nav-btn-outline">Register Society</button>
+                                                <button onClick={() => handleNavigation('/login')} className="nav-btn-filled">Login</button>
+                                            </div>
+                                        );
                                     }
 
                                     const handleClick = () => {

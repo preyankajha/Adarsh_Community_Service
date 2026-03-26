@@ -12,7 +12,7 @@ const FinalCTA = () => {
                     Register your family today and stay protected through unity and support.
                 </p>
                 <button onClick={() => navigate('/signup')} className="btn-pulse">
-                    Join Maa Jagdamba Samiti ➔
+                    Join Sanatani Swayamsevi Samiti ➔
                 </button>
             </div>
         </section>

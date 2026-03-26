@@ -83,9 +83,14 @@ const MemberDetailModal = ({ member, onClose }) => {
                         {member.gender === 'Male' ? '👨' : '👩'}
                     </div>
 
-                    <h2 style={{ margin: '0 0 10px 0', fontSize: '1.8rem', fontWeight: 800 }}>
+                    <h2 style={{ margin: '0 0 5px 0', fontSize: '1.8rem', fontWeight: 800 }}>
                         {member.full_name}
                     </h2>
+                    {member.full_name_hindi && (
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.4rem', fontWeight: 600, opacity: 0.9 }}>
+                            {member.full_name_hindi}
+                        </h3>
+                    )}
                     <div style={{ fontSize: '1.1rem', opacity: 0.95, fontWeight: 600 }}>
                         {member.relation}
                     </div>
@@ -121,6 +126,52 @@ const MemberDetailModal = ({ member, onClose }) => {
 
                         {member.aadhaar && (
                             <DetailRow label="Aadhaar" value={member.aadhaar} icon="🆔" />
+                        )}
+
+                        {member.education_history && member.education_history.length > 0 && (
+                            <div style={{ marginTop: '10px', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                <div style={{ fontWeight: 700, color: '#475569', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    🎓 Academic History
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: '1px solid #cbd5e1', textAlign: 'left' }}>
+                                                <th style={{ padding: '6px' }}>Level</th>
+                                                <th style={{ padding: '6px' }}>Board/Univ</th>
+                                                <th style={{ padding: '6px' }}>Year</th>
+                                                <th style={{ padding: '6px' }}>%</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {member.education_history.map((edu, idx) => (
+                                                <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '6px', fontWeight: 600 }}>{edu.level}</td>
+                                                    <td style={{ padding: '6px' }}>{edu.board}</td>
+                                                    <td style={{ padding: '6px' }}>{edu.year}</td>
+                                                    <td style={{ padding: '6px' }}>{edu.result}%</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {member.specialization_courses && member.specialization_courses.length > 0 && (
+                            <DetailRow 
+                                label="Specializations" 
+                                value={member.specialization_courses.join(', ')} 
+                                icon="📜" 
+                            />
+                        )}
+
+                        {member.skills && member.skills.length > 0 && (
+                            <DetailRow 
+                                label="Skills" 
+                                value={member.skills.join(', ')} 
+                                icon="🛠️" 
+                            />
                         )}
                     </div>
 

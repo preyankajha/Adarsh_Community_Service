@@ -8,6 +8,7 @@ import FamilyDashboard from './pages/FamilyDashboard';
 import MemberDashboard from './pages/MemberDashboard';
 import RegisterFamily from './pages/RegisterFamily';
 import Signup from './pages/Signup';
+import RegisterSociety from './pages/RegisterSociety';
 import { LanguageProvider } from './context/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -22,8 +23,10 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/login/:societyCode" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/register-family" element={<Signup />} />
+            <Route path="/register-society" element={<RegisterSociety />} />
 
             {/* Protected Routes */}
             {/* Main Committee / Admin Portal */}

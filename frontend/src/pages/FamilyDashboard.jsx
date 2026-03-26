@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import CommonDashboardContent from '../components/dashboard/CommonDashboardContent';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { getRoleLabel } from '../utils/roleHelper';
 import DashboardOverview from '../components/dashboard/DashboardOverview';
 import MemberDetailModal from '../components/MemberDetailModal';
 import RegisterFamily from './RegisterFamily';
+import { EnhancedListManager, EducationHistoryManager } from '../components/FormModules';
 
 const COUNTRIES = [
     "India", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
@@ -56,12 +57,22 @@ const DateInput = ({ value, onChange, placeholder, className, style }) => {
 const SearchableSelect = ({ value, onChange, options, placeholder }) => {
     const [search, setSearch] = useState('');
     const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const filteredOptions = (options || []).filter(opt =>
         opt.toLowerCase().includes(search.toLowerCase())
     );
     useEffect(() => { if (!isOpen) setSearch(''); }, [isOpen]);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
     return (
-        <div style={{ position: 'relative', width: '100%' }}>
+        <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
             <div
                 className="form-input"
                 onClick={() => setIsOpen(!isOpen)}
@@ -81,6 +92,88 @@ const SearchableSelect = ({ value, onChange, options, placeholder }) => {
         </div>
     );
 };
+
+const CountryCodeSearch = ({ value, onChange, options }) => {
+    const [search, setSearch] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const filteredOptions = options.filter(opt =>
+        (opt.name + opt.code).toLowerCase().includes(search.toLowerCase())
+    );
+
+    const selectedOpt = options.find(o => o.code === value) || options.find(o => o.code === '+91') || options[0];
+
+    useEffect(() => {
+        if (!isOpen) setSearch('');
+    }, [isOpen]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div ref={dropdownRef} style={{ position: 'relative', width: '130px', flexShrink: 0 }}>
+            <div
+                className="form-input"
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', height: '100%', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+            >
+                <span>{selectedOpt ? `${selectedOpt.flag} ${selectedOpt.code}` : '+91'}</span>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{isOpen ? '▲' : '▼'}</span>
+            </div>
+
+            {isOpen && (
+                <div style={{
+                    position: 'absolute', top: '100%', left: 0, width: '250px', zIndex: 1000,
+                    background: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius)',
+                    marginTop: '5px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                    display: 'flex', flexDirection: 'column'
+                }}>
+                    <input
+                        className="form-input"
+                        autoFocus
+                        placeholder="Search country/code..."
+                        style={{ border: 'none', borderRadius: 0, borderBottom: '1px solid var(--border)', height: '45px', padding: '10px' }}
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        onClick={e => e.stopPropagation()}
+                    />
+                    <div style={{ overflowY: 'auto', maxHeight: '200px' }}>
+                        {filteredOptions.length > 0 ? (
+                            filteredOptions.map((opt, i) => (
+                                <div
+                                    key={i}
+                                    style={{ padding: '10px 15px', cursor: 'pointer', display: 'flex', gap: '10px', alignItems: 'center' }}
+                                    onMouseDown={() => {
+                                        onChange(opt.code);
+                                        setIsOpen(false);
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                                >
+                                    <span>{opt.flag}</span>
+                                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={opt.name}>{opt.name}</span>
+                                    <span style={{ color: '#64748b', fontSize: '0.9rem' }}>{opt.code}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: '10px 15px', color: '#64748b' }}>No match found</div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Local ListManager removed, using EnhancedListManager from FormModules instead.
 
 const FamilyDashboard = () => {
     const { t, language } = useLanguage();
@@ -188,16 +281,20 @@ const FamilyDashboard = () => {
         tab: key
     }));
 
+
     const [initialMemberState, setInitialMemberState] = useState({
         full_name: '', full_name_title: 'Shri', father_husband_name: '', father_husband_title: 'Shri', relation: '', gender: 'Male', dob: '',
-        marital_status: 'Single', blood_group: '', mobile: '',
+        marital_status: 'Single', blood_group: '', mobile: '', mobile_country_code: '+91', whatsapp_country_code: '+91',
         education_level: 'High School', occupation_type: 'Student', occupation: 'Student', designation: '', organization: '', occupation_sector: '',
         relation_other: '', education_level_other: '', occupation_type_other: '',
         education_class: '', education_class_other: '', school_type: '', education_stream: '', profession_details: '', is_earning: 'No',
         residence_type: 'With Family', residence_purpose: '',
         residence_address: { country: 'India', house_no: '', locality: '', village_town_city: '', post_office: '', police_station: '', block_tehsil: '', district: '', state: 'Bihar', pin_code: '', landmark: '' },
         has_serious_illness: false, serious_illness_details: '',
-        is_specially_abled: false, specially_abled_details: ''
+        is_specially_abled: false, specially_abled_details: '',
+        education_history: [], // Added for Exam Form structure
+        specialization_courses: [],
+        skills: []
     });
 
     const [memberTemp, setMemberTemp] = useState(initialMemberState);
@@ -205,6 +302,70 @@ const FamilyDashboard = () => {
     const handleMemberChange = (field, value) => {
         setMemberTemp(prev => ({ ...prev, [field]: value }));
     };
+
+    const transliterate = async (text, callback) => {
+        if (!text || text.length < 2) return;
+        try {
+            const res = await fetch(`https://inputtools.google.com/request?text=${text}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`);
+            const data = await res.json();
+            if (data && data[0] === 'SUCCESS' && data[1][0][1][0]) {
+                callback(data[1][0][1][0]);
+            }
+        } catch (err) {
+            console.error("Transliteration error:", err);
+        }
+    };
+
+    // Auto-transliterate Editing Member
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (editingMember?.full_name && !editingMember.full_name_hindi) {
+                transliterate(editingMember.full_name, val => 
+                    setEditingMember(prev => ({...prev, full_name_hindi: val}))
+                );
+            }
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [editingMember?.full_name]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const fName = editingMember?.father_husband_name || editingMember?.father_name;
+            if (fName && !editingMember?.father_husband_name_hindi && !editingMember?.father_name_hindi) {
+                transliterate(fName, val => {
+                    setEditingMember(prev => ({
+                        ...prev, 
+                        father_husband_name_hindi: val,
+                        father_name_hindi: val
+                    }));
+                });
+            }
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [editingMember?.father_husband_name, editingMember?.father_name]);
+
+    // Auto-transliterate New Member being added
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (memberTemp.full_name) {
+                transliterate(memberTemp.full_name, val => 
+                    setMemberTemp(prev => ({...prev, full_name_hindi: val}))
+                );
+            }
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [memberTemp.full_name]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (memberTemp.father_husband_name) {
+                transliterate(memberTemp.father_husband_name, val => 
+                    setMemberTemp(prev => ({...prev, father_husband_name_hindi: val}))
+                );
+            }
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [memberTemp.father_husband_name]);
 
 
 
@@ -238,6 +399,29 @@ const FamilyDashboard = () => {
             finally { setIsPinLoading(false); }
         }
     };
+
+    const [countryCodes, setCountryCodes] = useState([{ name: 'India', code: '+91', flag: '🇮🇳' }]);
+
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const response = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,flags');
+                const data = await response.json();
+                const formatted = data
+                    .filter(c => c.idd.root)
+                    .map(c => ({
+                        name: c.name.common,
+                        code: c.idd.root + (c.idd.suffixes ? c.idd.suffixes[0] : ''),
+                        flag: c.flags.emoji || '🏳️'
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                setCountryCodes(formatted);
+            } catch (error) {
+                console.error("Failed to fetch country codes", error);
+            }
+        };
+        fetchCountries();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 900);
@@ -354,51 +538,58 @@ const FamilyDashboard = () => {
             banner={!isRestricted && (
                 <div style={{
                     background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    padding: '24px 32px',
-                    borderRadius: '0',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                    padding: '30px 40px',
+                    color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    color: 'white',
-                    width: '100%'
+                    width: '100%',
+                    position: 'relative'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                         <div style={{
-                            width: '56px',
-                            height: '56px',
-                            background: 'rgba(255,255,255,0.15)',
-                            borderRadius: '10px',
+                            width: '64px',
+                            height: '64px',
+                            background: 'rgba(255,255,255,0.2)',
+                            borderRadius: '14px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '1.75rem',
+                            fontSize: '2rem',
                             backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.2)'
+                            border: '1px solid rgba(255,255,255,0.3)'
                         }}>
-                            👨‍👩‍👧‍👦
+                            👑
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.85, marginBottom: '4px', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 500 }}>Family Dashboard</div>
-                            <div style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
-                                FAMILY HEAD
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                                <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '1px' }}>
+                                    {user?.role === 'family_head' ? 'Family Head' : 'Portal Access'}
+                                </span>
                             </div>
-                            <div style={{ fontSize: '0.875rem', opacity: 0.9, marginTop: '2px' }}>
-                                {user?.name}
+                            <div style={{ fontSize: '1.75rem', fontWeight: 950, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                                {user?.name || 'Authorized Member'}
+                            </div>
+                            <div style={{ fontSize: '0.85rem', opacity: 0.9, fontWeight: 600, marginTop: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                🏘️ Verified Community Member
                             </div>
                         </div>
                     </div>
                     <div style={{
-                        background: 'rgba(255,255,255,0.15)',
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        fontSize: '0.8125rem',
-                        fontWeight: 600,
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        letterSpacing: '0.3px'
+                        background: 'white',
+                        color: '#d97706',
+                        padding: '10px 20px',
+                        borderRadius: '12px',
+                        fontSize: '0.85rem',
+                        fontWeight: 900,
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
                     }}>
-                        👤 Family Portal
+                        <span>👤</span> Family Portal
                     </div>
                 </div>
             )}
@@ -602,6 +793,11 @@ const FamilyDashboard = () => {
                                                 </div>
 
                                                 <div className="input-group">
+                                                    <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Full Name (Hindi)</label>
+                                                    <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.full_name_hindi || ''} onChange={e => setEditingMember({ ...editingMember, full_name_hindi: e.target.value })} />
+                                                </div>
+
+                                                <div className="input-group">
                                                     <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Father / Husband Name</label>
                                                     <div style={{ display: 'flex', gap: '8px' }}>
                                                         <select style={{ width: '100px', padding: '12px' }} className="form-input" value={editingMember.father_husband_title || 'Shri'} onChange={e => setEditingMember({ ...editingMember, father_husband_title: e.target.value })}>
@@ -609,6 +805,11 @@ const FamilyDashboard = () => {
                                                         </select>
                                                         <input className="form-input" style={{ flex: 1, padding: '12px' }} value={editingMember.father_husband_name || editingMember.father_name || ''} onChange={e => setEditingMember({ ...editingMember, father_husband_name: e.target.value, father_name: e.target.value })} />
                                                     </div>
+                                                </div>
+
+                                                <div className="input-group">
+                                                    <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Father / Husband Name (Hindi)</label>
+                                                    <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.father_husband_name_hindi || editingMember.father_name_hindi || ''} onChange={e => setEditingMember({ ...editingMember, father_husband_name_hindi: e.target.value, father_name_hindi: e.target.value })} />
                                                 </div>
 
                                                 <div className="input-group">
@@ -640,12 +841,26 @@ const FamilyDashboard = () => {
 
                                                 <div className="input-group">
                                                     <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Mobile Number</label>
-                                                    <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.mobile} onChange={e => setEditingMember({ ...editingMember, mobile: e.target.value })} />
+                                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                                        <CountryCodeSearch
+                                                            value={editingMember.mobile_country_code || '+91'}
+                                                            onChange={val => setEditingMember({ ...editingMember, mobile_country_code: val })}
+                                                            options={countryCodes}
+                                                        />
+                                                        <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.mobile} onChange={e => setEditingMember({ ...editingMember, mobile: e.target.value })} />
+                                                    </div>
                                                 </div>
 
                                                 <div className="input-group">
                                                     <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>WhatsApp Number</label>
-                                                    <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.whatsapp || ''} onChange={e => setEditingMember({ ...editingMember, whatsapp: e.target.value })} />
+                                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                                        <CountryCodeSearch
+                                                            value={editingMember.whatsapp_country_code || '+91'}
+                                                            onChange={val => setEditingMember({ ...editingMember, whatsapp_country_code: val })}
+                                                            options={countryCodes}
+                                                        />
+                                                        <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.whatsapp || ''} onChange={e => setEditingMember({ ...editingMember, whatsapp: e.target.value })} />
+                                                    </div>
                                                 </div>
 
                                                 <div className="input-group">
@@ -672,6 +887,7 @@ const FamilyDashboard = () => {
                                                     <input className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.organization || ''} onChange={e => setEditingMember({ ...editingMember, organization: e.target.value })} />
                                                 </div>
 
+
                                                 <div className="input-group">
                                                     <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Is Earning?</label>
                                                     <select className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.is_earning || 'No'} onChange={e => setEditingMember({ ...editingMember, is_earning: e.target.value })}>
@@ -680,22 +896,58 @@ const FamilyDashboard = () => {
                                                     </select>
                                                 </div>
 
-                                                <div className="input-group">
-                                                    <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Residence Status</label>
-                                                    <select className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.residence_status || 'With Family'} onChange={e => setEditingMember({ ...editingMember, residence_status: e.target.value })}>
-                                                        <option value="With Family">With Family</option>
-                                                        <option value="Staying Separate">Staying Separate</option>
-                                                    </select>
+                                                {/* Education History & Skills Section */}
+                                                <div className="input-group" style={{ gridColumn: '1 / -1', background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', marginTop: '10px' }}>
+                                                    <h5 style={{ margin: '0 0 15px 0', color: '#1e293b', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        🎓 Academic & Professional Details
+                                                    </h5>
+
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                        <div className="input-group">
+                                                            <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem', marginBottom: '10px', display: 'block' }}>Education History (Exam Form Style)</label>
+                                                            <EducationHistoryManager
+                                                                history={editingMember.education_history || []}
+                                                                onChange={val => setEditingMember({ ...editingMember, education_history: val })}
+                                                                t={t}
+                                                                language={language}
+                                                            />
+                                                        </div>
+
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                            <EnhancedListManager
+                                                                items={editingMember.specialization_courses || []}
+                                                                onAdd={val => setEditingMember({ ...editingMember, specialization_courses: [...(editingMember.specialization_courses || []), val] })}
+                                                                onRemove={val => setEditingMember({ ...editingMember, specialization_courses: (editingMember.specialization_courses || []).filter(x => x !== val) })}
+                                                                placeholder={t.addSpecialization}
+                                                                label={t.specialization}
+                                                                options={formOptions?.specialization_courses || []}
+                                                                language={language}
+                                                            />
+                                                            <EnhancedListManager
+                                                                items={editingMember.skills || []}
+                                                                onAdd={val => setEditingMember({ ...editingMember, skills: [...(editingMember.skills || []), val] })}
+                                                                onRemove={val => setEditingMember({ ...editingMember, skills: (editingMember.skills || []).filter(x => x !== val) })}
+                                                                placeholder={t.addSkill}
+                                                                label={t.skills}
+                                                                options={formOptions?.skills || []}
+                                                                language={language}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                {editingMember.residence_status === 'Staying Separate' && (
-                                                    <div style={{ gridColumn: '1 / -1', marginTop: '15px', padding: '20px', background: '#fff7ed', borderRadius: '12px', border: '1px dashed #f97316' }}>
-                                                        <h5 style={{ margin: '0 0 15px 0', color: '#c2410c', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <span>🏙️</span> Current Address (Separate Stay)
-                                                        </h5>
+                                                <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                                                    <div className="input-group">
+                                                        <label style={{ fontWeight: 600, color: '#475569', fontSize: '0.9rem', display: 'block', marginBottom: '8px' }}>Residence Status</label>
+                                                        <select className="form-input" style={{ width: '100%', padding: '12px' }} value={editingMember.residence_status || 'With Family'} onChange={e => setEditingMember({ ...editingMember, residence_status: e.target.value })}>
+                                                            <option value="With Family">With Family</option>
+                                                            <option value="Staying Separate">Staying Separate</option>
+                                                        </select>
+                                                    </div>
 
-                                                        <div style={{ marginBottom: '15px' }}>
-                                                            <label style={{ fontSize: '0.85rem', color: '#ea580c', fontWeight: 600, marginBottom: '6px', display: 'block' }}>Purpose of Separate Stay</label>
+                                                    {editingMember.residence_status === 'Staying Separate' && (
+                                                        <div className="input-group">
+                                                            <label style={{ fontSize: '0.85rem', color: '#ea580c', fontWeight: 600, marginBottom: '6px', display: 'block' }}>Purpose (Separate Stay)</label>
                                                             <select
                                                                 className="form-input"
                                                                 style={{ width: '100%', padding: '10px' }}
@@ -710,6 +962,14 @@ const FamilyDashboard = () => {
                                                                 <option value="Other">Other</option>
                                                             </select>
                                                         </div>
+                                                    )}
+                                                </div>
+
+                                                {editingMember.residence_status === 'Staying Separate' && (
+                                                    <div style={{ gridColumn: '1 / -1', marginTop: '15px', padding: '20px', background: '#fff7ed', borderRadius: '12px', border: '1px dashed #f97316' }}>
+                                                        <h5 style={{ margin: '0 0 15px 0', color: '#c2410c', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <span>🏙️</span> Separate Residence Address
+                                                        </h5>
 
                                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                                                             <div>
@@ -1453,219 +1713,405 @@ const FamilyDashboard = () => {
                                     )}
 
                                     {userState.showAddMemberModal && (
-                                        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, backdropFilter: 'blur(5px)' }}>
-                                            <div style={{ background: 'white', padding: '40px', borderRadius: '24px', width: '95%', maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '2px solid #f1f5f9', paddingBottom: '20px' }}>
-                                                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--primary-blue)', fontWeight: 800 }}>Add New Family Member</h3>
-                                                    <button onClick={() => setUserState(prev => ({ ...prev, showAddMemberModal: false }))} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
+                                        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.75)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, backdropFilter: 'blur(8px)' }}>
+                                            <div style={{ background: 'white', borderRadius: '28px', width: '95%', maxWidth: '950px', maxHeight: '92vh', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', animation: 'modalAppear 0.3s ease-out' }}>
+                                                {/* Sticky Header */}
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '25px 40px', borderBottom: '1px solid #f1f5f9', background: 'white' }}>
+                                                    <div>
+                                                        <h3 style={{ margin: 0, fontSize: '1.6rem', color: '#0f172a', fontWeight: 900 }}>{t.form.addMember}</h3>
+                                                        <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.9rem' }}>Fill in the details to add a new member to your family profile.</p>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => setUserState(prev => ({ ...prev, showAddMemberModal: false }))} 
+                                                        style={{ background: '#f8fafc', border: 'none', borderRadius: '12px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', transition: 'all 0.2s' }}
+                                                        onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
+                                                        onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}
+                                                    >×</button>
                                                 </div>
 
-                                                {formOptions ? (
-                                                    <form onSubmit={async (e) => {
-                                                        e.preventDefault();
-                                                        try {
-                                                            await api.addMemberRequest(memberTemp);
-                                                            alert("Member addition request submitted!");
-                                                            setUserState(prev => ({ ...prev, showAddMemberModal: false }));
-                                                            setMemberTemp(initialMemberState);
-                                                            fetchData();
-                                                        } catch (err) {
-                                                            alert("Failed: " + (err.response?.data?.detail || err.message));
-                                                        }
-                                                    }}>
-                                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '25px' }}>
-                                                            {/* Personal Details */}
-                                                            <div className="input-group">
-                                                                <label>{t.fullName} *</label>
-                                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                                    <select style={{ width: '100px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.full_name_title} onChange={e => handleMemberChange('full_name_title', e.target.value)}>
-                                                                        {PREFIX_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                    </select>
-                                                                    <input className="form-input" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Name" value={memberTemp.full_name} onChange={e => handleMemberChange('full_name', e.target.value)} required />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.relation} *</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.relation} onChange={e => handleMemberChange('relation', e.target.value)} required>
-                                                                    <option value="">Select Relation</option>
-                                                                    {formOptions.relation.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                                {memberTemp.relation === 'Other' && (
-                                                                    <input className="form-input" style={{ width: '100%', marginTop: '5px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Please specify relation" value={memberTemp.relation_other} onChange={e => handleMemberChange('relation_other', e.target.value)} />
-                                                                )}
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.fatherName} *</label>
-                                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                                    <select style={{ width: '100px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.father_husband_title} onChange={e => handleMemberChange('father_husband_title', e.target.value)}>
-                                                                        {PREFIX_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                    </select>
-                                                                    <input className="form-input" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Father / Husband Name" value={memberTemp.father_husband_name} onChange={e => handleMemberChange('father_husband_name', e.target.value)} required />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.gender} *</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.gender} onChange={e => handleMemberChange('gender', e.target.value)}>
-                                                                    {formOptions.gender.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.dob} *</label>
-                                                                <DateInput className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.dob} onChange={e => handleMemberChange('dob', e.target.value)} required />
-                                                            </div>
-
-                                                            {/* Education & Occupation */}
-                                                            <div className="input-group">
-                                                                <label>{t.education}</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.education_level} onChange={e => handleMemberChange('education_level', e.target.value)}>
-                                                                    {formOptions.education_level.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.occupation}</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.occupation_type} onChange={e => handleMemberChange('occupation_type', e.target.value)}>
-                                                                    {formOptions.occupation.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                                {memberTemp.occupation_type === 'Other' && (
-                                                                    <input className="form-input" style={{ width: '100%', marginTop: '5px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Please specify occupation" value={memberTemp.occupation_type_other} onChange={e => handleMemberChange('occupation_type_other', e.target.value)} />
-                                                                )}
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>Is Member Earning?</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.is_earning} onChange={e => handleMemberChange('is_earning', e.target.value)}>
-                                                                    <option value="No">No</option>
-                                                                    <option value="Yes">Yes</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.mobile}</label>
-                                                                <input className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="10-digit mobile" value={memberTemp.mobile} onChange={e => handleMemberChange('mobile', e.target.value)} />
-                                                            </div>
-
-                                                            <div className="input-group">
-                                                                <label>{t.maritalStatus}</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.marital_status} onChange={e => handleMemberChange('marital_status', e.target.value)}>
-                                                                    {formOptions.marital_status.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                            </div>
-
-                                                            {/* Residence & Health */}
-                                                            <div className="input-group">
-                                                                <label>{t.residenceType}</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.residence_type} onChange={e => handleMemberChange('residence_type', e.target.value)}>
-                                                                    <option value="With Family">{t.withFamily}</option>
-                                                                    <option value="Separate">{t.separate}</option>
-                                                                </select>
-                                                            </div>
-
-                                                            {memberTemp.residence_type === 'Separate' && (
-                                                                <div className="input-group" style={{ gridColumn: isMobile ? 'auto' : '1 / -1', background: '#f0f9ff', padding: '15px', borderRadius: '12px', border: '1px solid #bae6fd' }}>
-                                                                    <label style={{ fontWeight: 700, display: 'block', marginBottom: '10px' }}>Separate Residence Reason & Address</label>
-                                                                    <input className="form-input" style={{ width: '100%', marginBottom: '10px', padding: '10px', borderRadius: '8px', border: '1px solid #bae6fd' }} placeholder="e.g. For Studies in Kota, Job in Mumbai" value={memberTemp.residence_purpose} onChange={e => handleMemberChange('residence_purpose', e.target.value)} />
-                                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-                                                                        <input placeholder="H.No" style={{ padding: '8px', borderRadius: '6px', border: '1px solid #bae6fd' }} value={memberTemp.residence_address.house_no} onChange={e => handleMemberChange('residence_address', { ...memberTemp.residence_address, house_no: e.target.value })} />
-                                                                        <input placeholder="Village/City" style={{ padding: '8px', borderRadius: '6px', border: '1px solid #bae6fd' }} value={memberTemp.residence_address.village_town_city} onChange={e => handleMemberChange('residence_address', { ...memberTemp.residence_address, village_town_city: e.target.value })} />
-                                                                        <input placeholder="District" style={{ padding: '8px', borderRadius: '6px', border: '1px solid #bae6fd' }} value={memberTemp.residence_address.district} onChange={e => handleMemberChange('residence_address', { ...memberTemp.residence_address, district: e.target.value })} />
-                                                                        <input placeholder="PIN" style={{ padding: '8px', borderRadius: '6px', border: '1px solid #bae6fd' }} value={memberTemp.residence_address.pin_code} onChange={e => handleMemberChange('residence_address', { ...memberTemp.residence_address, pin_code: e.target.value })} />
-                                                                    </div>
-                                                                </div>
-                                                            )}
-
-                                                            <div className="input-group">
-                                                                <label>{t.bloodGroup}</label>
-                                                                <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.blood_group} onChange={e => handleMemberChange('blood_group', e.target.value)}>
-                                                                    <option value="">Select</option>
-                                                                    {formOptions.blood_group.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
-                                                                </select>
-                                                            </div>
-
-                                                            {/* Education Details - Class/School/Stream */}
-                                                            {memberTemp.education_level === 'Studying' && (
-                                                                <>
+                                                {/* Scrollable Content */}
+                                                <div style={{ padding: '40px', overflowY: 'auto', flex: 1, background: '#fbfcfd' }}>
+                                                    {formOptions ? (
+                                                        <form id="add-member-form" onSubmit={async (e) => {
+                                                            e.preventDefault();
+                                                            try {
+                                                                await api.addMemberRequest(memberTemp);
+                                                                alert("Member addition request submitted! The committee will review it soon.");
+                                                                setUserState(prev => ({ ...prev, showAddMemberModal: false }));
+                                                                setMemberTemp(initialMemberState);
+                                                                fetchData();
+                                                            } catch (err) {
+                                                                alert("Failed: " + (err.response?.data?.detail || err.message));
+                                                            }
+                                                        }}>
+                                                            {/* SECTION: PERSONAL DETAILS */}
+                                                            <div style={{ marginBottom: '40px' }}>
+                                                                <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '20px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+                                                                    <span style={{ background: '#e0f2fe', padding: '6px', borderRadius: '8px', fontSize: '1.2rem' }}>👤</span>
+                                                                    {t.form.personalDetails}
+                                                                </h4>
+                                                                
+                                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '25px' }}>
                                                                     <div className="input-group">
-                                                                        <label>{t.class}</label>
-                                                                        <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.education_class} onChange={e => handleMemberChange('education_class', e.target.value)}>
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.fullName} *</label>
+                                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                                            <select 
+                                                                                style={{ width: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', fontWeight: 600, color: '#1e293b' }} 
+                                                                                value={memberTemp.full_name_title} 
+                                                                                onChange={e => handleMemberChange('full_name_title', e.target.value)}
+                                                                            >
+                                                                                {PREFIX_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                            </select>
+                                                                            <input 
+                                                                                className="form-input" 
+                                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', transition: 'border-color 0.2s' }} 
+                                                                                placeholder={t.form.placeholderName} 
+                                                                                value={memberTemp.full_name} 
+                                                                                onChange={e => handleMemberChange('full_name', e.target.value)} 
+                                                                                required 
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.fullNameHindi}</label>
+                                                                        <input 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            placeholder="लिखते ही अपने आप अनुवाद होगा" 
+                                                                            value={memberTemp.full_name_hindi || ''} 
+                                                                            onChange={e => handleMemberChange('full_name_hindi', e.target.value)} 
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.relation} *</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.relation} 
+                                                                            onChange={e => handleMemberChange('relation', e.target.value)} 
+                                                                            required
+                                                                        >
+                                                                            <option value="">{t.form.selectRelation}</option>
+                                                                            {formOptions.relation.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                        </select>
+                                                                        {memberTemp.relation === 'Other' && (
+                                                                            <input 
+                                                                                className="form-input" 
+                                                                                style={{ width: '100%', marginTop: '10px', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                placeholder="Please specify relation" 
+                                                                                value={memberTemp.relation_other} 
+                                                                                onChange={e => handleMemberChange('relation_other', e.target.value)} 
+                                                                            />
+                                                                        )}
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.fatherHusband} *</label>
+                                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                                            <select 
+                                                                                style={{ width: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white' }} 
+                                                                                value={memberTemp.father_husband_title} 
+                                                                                onChange={e => handleMemberChange('father_husband_title', e.target.value)}
+                                                                            >
+                                                                                {PREFIX_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                            </select>
+                                                                            <input 
+                                                                                className="form-input" 
+                                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                placeholder={t.form.placeholderFather} 
+                                                                                value={memberTemp.father_husband_name} 
+                                                                                onChange={e => handleMemberChange('father_husband_name', e.target.value)} 
+                                                                                required 
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.fatherNameHindi}</label>
+                                                                        <input 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            placeholder="हिंदी नाम" 
+                                                                            value={memberTemp.father_husband_name_hindi || ''} 
+                                                                            onChange={e => handleMemberChange('father_husband_name_hindi', e.target.value)} 
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.gender} *</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.gender} 
+                                                                            onChange={e => handleMemberChange('gender', e.target.value)}
+                                                                        >
+                                                                            <option value="">{t.form.selectGender}</option>
+                                                                            {formOptions.gender.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.dob} *</label>
+                                                                        <DateInput 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.dob} 
+                                                                            onChange={e => handleMemberChange('dob', e.target.value)} 
+                                                                            required 
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.maritalStatus}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.marital_status} 
+                                                                            onChange={e => handleMemberChange('marital_status', e.target.value)}
+                                                                        >
+                                                                            <option value="">{t.form.selectMaritalStatus}</option>
+                                                                            {formOptions.marital_status.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.mobile}</label>
+                                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                                            <CountryCodeSearch
+                                                                                value={memberTemp.mobile_country_code || '+91'}
+                                                                                onChange={val => handleMemberChange('mobile_country_code', val)}
+                                                                                options={countryCodes}
+                                                                            />
+                                                                            <input 
+                                                                                className="form-input" 
+                                                                                style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                placeholder="10-digit mobile" 
+                                                                                value={memberTemp.mobile} 
+                                                                                onChange={e => handleMemberChange('mobile', e.target.value)} 
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.bloodGroup}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.blood_group} 
+                                                                            onChange={e => handleMemberChange('blood_group', e.target.value)}
+                                                                        >
                                                                             <option value="">Select</option>
-                                                                            {formOptions.education_class.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                            {formOptions.blood_group.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
                                                                         </select>
                                                                     </div>
-                                                                    <div className="input-group">
-                                                                        <label>School/College Type</label>
-                                                                        <select className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={memberTemp.school_type} onChange={e => handleMemberChange('school_type', e.target.value)}>
-                                                                            <option value="Government">Government</option>
-                                                                            <option value="Private">Private</option>
-                                                                            <option value="Semi-Government">Semi-Government</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </>
-                                                            )}
-
-                                                            {(memberTemp.education_level === 'Graduate' || memberTemp.education_level === 'Post Graduate' || memberTemp.education_level === 'Doctorate') && (
-                                                                <div className="input-group">
-                                                                    <label>Stream / Major</label>
-                                                                    <input className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="e.g. Science, Arts, Engineering" value={memberTemp.education_stream} onChange={e => handleMemberChange('education_stream', e.target.value)} />
                                                                 </div>
-                                                            )}
-
-                                                            {/* Occupation Details */}
-                                                            {['Employed', 'Business', 'Self-Employed'].includes(memberTemp.occupation_type) && (
-                                                                <>
-                                                                    <div className="input-group">
-                                                                        <label>{t.designation}</label>
-                                                                        <input className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Designation" value={memberTemp.designation} onChange={e => handleMemberChange('designation', e.target.value)} />
-                                                                    </div>
-                                                                    <div className="input-group">
-                                                                        <label>{t.organization}</label>
-                                                                        <input className="form-input" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Company / Org Name" value={memberTemp.organization} onChange={e => handleMemberChange('organization', e.target.value)} />
-                                                                    </div>
-                                                                </>
-                                                            )}
-
-                                                            {/* Health Details */}
-                                                            <div className="input-group" style={{ gridColumn: isMobile ? 'auto' : '1 / -1', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                                                                <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
-                                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                                                        <input type="checkbox" checked={memberTemp.has_serious_illness} onChange={e => handleMemberChange('has_serious_illness', e.target.checked)} />
-                                                                        <span>{t.seriousIllness}</span>
-                                                                    </label>
-                                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                                                        <input type="checkbox" checked={memberTemp.is_specially_abled} onChange={e => handleMemberChange('is_specially_abled', e.target.checked)} />
-                                                                        <span>{t.speciallyAbled}</span>
-                                                                    </label>
-                                                                </div>
-
-                                                                {memberTemp.has_serious_illness && (
-                                                                    <input className="form-input" style={{ width: '100%', marginTop: '10px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Serious Illness Details" value={memberTemp.serious_illness_details} onChange={e => handleMemberChange('serious_illness_details', e.target.value)} />
-                                                                )}
-                                                                {memberTemp.is_specially_abled && (
-                                                                    <input className="form-input" style={{ width: '100%', marginTop: '10px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Specially Abled Details" value={memberTemp.specially_abled_details} onChange={e => handleMemberChange('specially_abled_details', e.target.value)} />
-                                                                )}
                                                             </div>
-                                                        </div>
 
-                                                        <div style={{ marginTop: '30px', display: 'flex', gap: '15px', justifyContent: 'flex-end', borderTop: '2px solid #f1f5f9', paddingTop: '25px' }}>
-                                                            <button type="button" onClick={() => setUserState(prev => ({ ...prev, showAddMemberModal: false }))} style={{ padding: '12px 30px', border: 'none', background: '#f1f5f9', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, color: '#64748b' }}>Cancel</button>
-                                                            <button type="submit" style={{ padding: '12px 40px', border: 'none', background: 'var(--primary)', color: 'white', borderRadius: '12px', cursor: 'pointer', fontWeight: 800, boxShadow: '0 10px 15px -3px rgba(216, 124, 29, 0.3)' }}>Submit Membership Request</button>
+                                                            {/* SECTION: EDUCATION & OCCUPATION */}
+                                                            <div style={{ marginBottom: '40px' }}>
+                                                                <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '20px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+                                                                    <span style={{ background: '#fef3c7', padding: '6px', borderRadius: '8px', fontSize: '1.2rem' }}>🎓</span>
+                                                                    {t.form.educationOccupation}
+                                                                </h4>
+
+                                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '25px' }}>
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.education}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.education_level} 
+                                                                            onChange={e => handleMemberChange('education_level', e.target.value)}
+                                                                        >
+                                                                            <option value="">{t.form.selectEducation}</option>
+                                                                            {formOptions.education_level.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.occupation}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.occupation_type} 
+                                                                            onChange={e => handleMemberChange('occupation_type', e.target.value)}
+                                                                        >
+                                                                            <option value="">{t.form.selectOccupation}</option>
+                                                                            {formOptions.occupation.map(opt => <option key={opt.value} value={opt.value}>{opt[language]}</option>)}
+                                                                        </select>
+                                                                        {memberTemp.occupation_type === 'Other' && (
+                                                                            <input 
+                                                                                className="form-input" 
+                                                                                style={{ width: '100%', marginTop: '10px', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                placeholder="Please specify" 
+                                                                                value={memberTemp.occupation_type_other} 
+                                                                                onChange={e => handleMemberChange('occupation_type_other', e.target.value)} 
+                                                                            />
+                                                                        )}
+                                                                    </div>
+
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.isEarning}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.is_earning} 
+                                                                            onChange={e => handleMemberChange('is_earning', e.target.value)}
+                                                                        >
+                                                                            <option value="No">{t.form.notEarning}</option>
+                                                                            <option value="Yes">{t.form.earning}</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    {['Employed', 'Business', 'Self-Employed', 'Service'].includes(memberTemp.occupation_type) && (
+                                                                        <>
+                                                                            <div className="input-group">
+                                                                                <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.designation}</label>
+                                                                                <input 
+                                                                                    className="form-input" 
+                                                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                    placeholder="e.g. Manager, Owner" 
+                                                                                    value={memberTemp.designation} 
+                                                                                    onChange={e => handleMemberChange('designation', e.target.value)} 
+                                                                                />
+                                                                            </div>
+                                                                            <div className="input-group">
+                                                                                <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.organization}</label>
+                                                                                <input 
+                                                                                    className="form-input" 
+                                                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                                    placeholder="Company or Org Name" 
+                                                                                    value={memberTemp.organization} 
+                                                                                    onChange={e => handleMemberChange('organization', e.target.value)} 
+                                                                                />
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* SECTION: RESIDENCE & HEALTH */}
+                                                            <div style={{ marginBottom: '40px' }}>
+                                                                <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '20px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+                                                                    <span style={{ background: '#dcfce7', padding: '6px', borderRadius: '8px', fontSize: '1.2rem' }}>🏡</span>
+                                                                    {t.form.healthResidence}
+                                                                </h4>
+
+                                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '25px' }}>
+                                                                    <div className="input-group">
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.residenceType}</label>
+                                                                        <select 
+                                                                            className="form-input" 
+                                                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }} 
+                                                                            value={memberTemp.residence_type} 
+                                                                            onChange={e => handleMemberChange('residence_type', e.target.value)}
+                                                                        >
+                                                                            <option value="With Family">{t.form.withFamily}</option>
+                                                                            <option value="Separate">{t.form.separate}</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div className="input-group" style={{ gridColumn: isMobile ? 'auto' : '1 / -1', background: '#f8fafc', padding: '20px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+                                                                        <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+                                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', fontWeight: 600, color: '#475569' }}>
+                                                                                <input 
+                                                                                    type="checkbox" 
+                                                                                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                                                                    checked={memberTemp.has_serious_illness} 
+                                                                                    onChange={e => handleMemberChange('has_serious_illness', e.target.checked)} 
+                                                                                />
+                                                                                <span>{t.form.seriousIllness}</span>
+                                                                            </label>
+                                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', fontWeight: 600, color: '#475569' }}>
+                                                                                <input 
+                                                                                    type="checkbox" 
+                                                                                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                                                                    checked={memberTemp.is_specially_abled} 
+                                                                                    onChange={e => handleMemberChange('is_specially_abled', e.target.checked)} 
+                                                                                />
+                                                                                <span>{t.form.speciallyAbled}</span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* SECTION: SKILLS & QUALIFICATIONS */}
+                                                            <div style={{ marginBottom: '20px' }}>
+                                                                <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '20px', paddingBottom: '10px', borderBottom: '2px solid #e2e8f0' }}>
+                                                                    <span style={{ background: '#fff7ed', padding: '6px', borderRadius: '8px', fontSize: '1.2rem' }}>🎨</span>
+                                                                    {t.form.skillsQualifications}
+                                                                </h4>
+
+                                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '25px' }}>
+                                                                    <div className="input-group" style={{ gridColumn: isMobile ? 'auto' : '1 / -1' }}>
+                                                                        <label style={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>{t.form.qualifications} (Detailed History)</label>
+                                                                        <EducationHistoryManager
+                                                                            history={memberTemp.education_history || []}
+                                                                            onChange={val => handleMemberChange('education_history', val)}
+                                                                            t={t.form}
+                                                                            language={language}
+                                                                        />
+                                                                    </div>
+                                                                    <EnhancedListManager
+                                                                        items={memberTemp.skills || []}
+                                                                        onAdd={val => handleMemberChange('skills', [...(memberTemp.skills || []), val])}
+                                                                        onRemove={val => handleMemberChange('skills', (memberTemp.skills || []).filter(x => x !== val))}
+                                                                        placeholder={t.form.addSkill}
+                                                                        label={t.form.skills}
+                                                                        options={formOptions?.skills || []}
+                                                                        language={language}
+                                                                    />
+                                                                    <EnhancedListManager
+                                                                        items={memberTemp.specialization_courses || []}
+                                                                        onAdd={val => handleMemberChange('specialization_courses', [...(memberTemp.specialization_courses || []), val])}
+                                                                        onRemove={val => handleMemberChange('specialization_courses', (memberTemp.specialization_courses || []).filter(x => x !== val))}
+                                                                        placeholder={t.form.addSpecialization}
+                                                                        label={t.form.specialization}
+                                                                        options={formOptions?.specialization_courses || []}
+                                                                        language={language}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    ) : (
+                                                        <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+                                                            <div className="spinner" style={{ margin: '0 auto 20px' }}></div>
+                                                            <p>Loading form options...</p>
                                                         </div>
-                                                    </form>
-                                                ) : <div style={{ textAlign: 'center', padding: '40px' }}>Loading form options...</div>}
+                                                    )}
+                                                </div>
+
+                                                {/* Sticky Footer */}
+                                                <div style={{ padding: '20px 40px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'flex-end', gap: '15px', background: 'white' }}>
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => setUserState(prev => ({ ...prev, showAddMemberModal: false }))} 
+                                                        style={{ padding: '14px 25px', borderRadius: '14px', border: '1px solid #e2e8f0', background: 'white', color: '#64748b', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                                                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                                                        onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                                                    >
+                                                        {t.form.cancel}
+                                                    </button>
+                                                    <button 
+                                                        type="submit" 
+                                                        form="add-member-form"
+                                                        className="cta-button" 
+                                                        style={{ padding: '14px 40px', borderRadius: '14px', background: 'var(--primary-blue)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                                    >
+                                                        {t.form.submit}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
                                 </>
                             )
-                            }
-                        </div>
-                    )
-                }
-
+                        }
+                    </div>
+                )}
                 {
                     activeTab === 'help' && (
                         <div className="help-tab">

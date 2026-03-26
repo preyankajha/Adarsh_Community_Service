@@ -21,7 +21,8 @@ import {
     UserCircle,
     Users,
     X,
-    Eye
+    Eye,
+    Plus
 } from 'lucide-react';
 import DashboardOverview from '../components/dashboard/DashboardOverview';
 import MemberDetailModal from '../components/MemberDetailModal';
@@ -374,32 +375,41 @@ const AdminDashboard = () => {
                                     <div>
                                         <h3 style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>Family Head</h3>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.9rem' }}>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Name</strong> {fam.head_details?.full_name || fam.head_name}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Father/Husband</strong> {fam.head_details?.father_husband_name || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>DOB</strong> {fam.head_details?.dob || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Gender</strong> {fam.head_details?.gender || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Education</strong> {fam.head_details?.education || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Occupation</strong> {fam.head_details?.occupation || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Mobile</strong> {fam.head_details?.mobile || 'N/A'}</div>
-                                            <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Aadhaar</strong> {fam.head_details?.aadhaar_card || 'N/A'}</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Address & Bank */}
-                                    <div>
-                                        <h3 style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>Address & Bank</h3>
-                                        <div style={{ marginBottom: '20px', fontSize: '0.9rem' }}>
-                                            <div style={{ fontWeight: 600, color: '#475569', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase' }}>Current Address</div>
-                                            <div>{fam.current_address?.village_town_city}, {fam.current_address?.post_office}</div>
-                                            <div>{fam.current_address?.district}, {fam.current_address?.state} - {fam.current_address?.pin_code}</div>
-                                        </div>
-                                        <div style={{ fontSize: '0.9rem' }}>
-                                            <div style={{ fontWeight: 600, color: '#475569', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase' }}>Bank Details</div>
-                                            <div>{fam.bank_details?.bank_name || 'N/A'}</div>
-                                            <div>Ac/No: {fam.bank_details?.account_number || 'N/A'}</div>
-                                            <div>IFSC: {fam.bank_details?.ifsc_code || 'N/A'}</div>
-                                        </div>
-                                    </div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Name</strong> {fam.head_details?.full_name || fam.head_name || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Father/Husband</strong> {fam.head_details?.father_name || fam.head_details?.father_husband_name || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>DOB</strong> {fam.head_details?.dob || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Gender</strong> {fam.head_details?.gender || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Marital Status</strong> {fam.head_details?.marital_status || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Blood Group</strong> {fam.head_details?.blood_group || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Mobile</strong> {fam.head_details?.mobile || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>WhatsApp</strong> {fam.head_details?.whatsapp || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Email</strong> {fam.head_details?.email || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Aadhaar</strong> {fam.head_details?.aadhaar || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Occupation</strong> {fam.head_details?.occupation || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Income Range</strong> {fam.head_details?.income_range || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Designation</strong> {fam.head_details?.designation || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Organization</strong> {fam.head_details?.organization || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Sector</strong> {fam.head_details?.sector || 'N/A'}</div>
+                                             <div><strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Family Type</strong> {fam.head_details?.family_type || 'N/A'}</div>
+                                         </div>
+                                         <div style={{ marginBottom: '12px', fontSize: '0.9rem' }}>
+                                             <div style={{ fontWeight: 600, color: '#475569', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase' }}>Nominee</div>
+                                             <div>{fam.head_details?.nominee_name || fam.nominee_details?.nominees?.[0]?.full_name || 'N/A'} ({fam.head_details?.nominee_relation || fam.nominee_details?.nominees?.[0]?.relation || '-'})</div>
+                                             <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Mobile: {fam.head_details?.nominee_mobile || fam.nominee_details?.nominees?.[0]?.mobile || 'N/A'}</div>
+                                         </div>
+                                         <div style={{ marginBottom: '12px', fontSize: '0.9rem' }}>
+                                             <div style={{ fontWeight: 600, color: '#475569', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase' }}>Emergency Contact</div>
+                                             <div>{fam.head_details?.emergency_name || fam.nominee_details?.emergency_name || 'N/A'}</div>
+                                             <div style={{ color: '#64748b', fontSize: '0.85rem' }}>{fam.head_details?.emergency_number || fam.nominee_details?.emergency_mobile || 'N/A'}</div>
+                                         </div>
+                                         {fam.head_details?.education_history?.length > 0 && (
+                                             <div style={{ fontSize: '0.9rem' }}>
+                                                 <div style={{ fontWeight: 600, color: '#475569', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase' }}>Highest Education</div>
+                                                 <div>{fam.head_details.education_history[fam.head_details.education_history.length - 1]?.level}</div>
+                                                 <div style={{ color: '#64748b', fontSize: '0.85rem' }}>{fam.head_details.education_history[fam.head_details.education_history.length - 1]?.board_university}</div>
+                                             </div>
+                                         )}
+                                     </div>
                                 </div>
 
                                 <div style={{ marginTop: '30px' }}>
@@ -645,9 +655,9 @@ const AdminDashboard = () => {
                                     </button>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
-                                    <p style={{ margin: 0 }}><strong>Head Name:</strong> {fam.head_name}</p>
-                                    <p style={{ margin: 0 }}><strong>Father/Husband:</strong> {fam.father_name}</p>
-                                    <p style={{ margin: 0 }}><strong>Mobile:</strong> {fam.mobile}</p>
+                                    <p style={{ margin: 0 }}><strong>Head Name:</strong> {fam.head_name || fam.head_details?.full_name || 'N/A'}</p>
+                                    <p style={{ margin: 0 }}><strong>Father/Husband:</strong> {fam.father_name || fam.head_details?.father_name || fam.head_details?.father_husband_name || 'N/A'}</p>
+                                    <p style={{ margin: 0 }}><strong>Mobile:</strong> {fam.mobile || fam.head_details?.mobile || 'N/A'}</p>
                                     <p style={{ margin: 0 }}><strong>Current Stage:</strong> <span style={{ color: 'var(--accent-orange)', fontWeight: 700 }}>{fam.verification_stage}</span></p>
                                     <p style={{ margin: 0 }}><strong>Origin:</strong> {fam.registration_method || 'Direct'}</p>
                                 </div>
@@ -690,10 +700,10 @@ const AdminDashboard = () => {
                                         <tbody>
                                             {fam.members.map((m, idx) => (
                                                 <tr key={idx}>
-                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.name}</td>
-                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.relationship}</td>
-                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.dob || m.age}</td>
-                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.occupation || 'N/A'}</td>
+                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.full_name || m.name || 'N/A'}</td>
+                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.relation || m.relationship || 'N/A'}</td>
+                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.dob || m.age || 'N/A'}</td>
+                                                    <td style={{ padding: '10px', border: '1px solid #e2e8f0' }}>{m.occupation || m.occupation_type || 'N/A'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -733,6 +743,7 @@ const AdminDashboard = () => {
         { id: 'funds', label: 'Finance & Funds', icon: <PieChart size={20} />, allowed: ['admin', 'super_admin', 'treasurer', 'president', 'secretary', 'auditor'] },
         { id: 'notices', label: 'Notices', icon: <Bell size={20} />, allowed: ['admin', 'super_admin', 'president', 'secretary', 'joint_secretary'] },
         { id: 'roles', label: 'Committee Roles', icon: <ShieldCheck size={20} />, allowed: ['admin', 'super_admin', 'president'] },
+        { id: 'committee-members', label: 'Committee Directory', icon: <Users size={20} />, allowed: ['admin', 'super_admin', 'president', 'secretary', 'treasurer', 'executive_member', 'coordinator'] },
         { id: 'governance', label: 'Governance', icon: <Vote size={20} />, allowed: ['admin', 'super_admin', 'president', 'secretary', 'legal_advisor'] },
         { id: 'audit', label: 'Audit Logs', icon: <ClipboardList size={20} />, allowed: ['admin', 'super_admin', 'auditor', 'president'] },
         { id: 'history', label: 'System History', icon: <History size={20} />, allowed: ['admin', 'super_admin'] },
@@ -756,7 +767,7 @@ const AdminDashboard = () => {
                 banner={(
                     <div style={{
                         background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                        padding: '24px 32px',
+                        padding: '16px 32px',
                         borderRadius: '0',
                         boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
                         display: 'flex',
@@ -805,157 +816,195 @@ const AdminDashboard = () => {
                     </div>
                 )}
             >
-                <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
-                    <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-                        {loading && !sharedDataLoaded ? (
-                            <div style={{ padding: '40px', textAlign: 'center' }}>
-                                <div className="spinner" style={{ margin: '0 auto 20px', width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid var(--primary-blue)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                                <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Synchronizing Dashboard Intelligence...</p>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Common Tab Content */}
-                                {['funds', 'contributions', 'rules', 'accounts', 'notices', 'notice-management', 'profile', 'audit', 'inquiries', 'elections', 'history', 'roles', 'governance'].includes(activeTab) && (
-                                    <CommonDashboardContent activeTab={activeTab} role={user?.role} user={user} />
-                                )}
+                <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+                    {loading && !sharedDataLoaded ? (
+                        <div style={{ padding: '40px', textAlign: 'center' }}>
+                            <div className="spinner" style={{ margin: '0 auto 20px', width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid var(--primary-blue)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                            <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Synchronizing Dashboard Intelligence...</p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Common Tab Content */}
+                            {['funds', 'contributions', 'rules', 'accounts', 'notices', 'notice-management', 'profile', 'audit', 'inquiries', 'elections', 'history', 'roles', 'governance', 'committee-members'].includes(activeTab) && (
+                                <CommonDashboardContent activeTab={activeTab} role={user?.role} user={user} />
+                            )}
 
 
-                                {activeTab === 'overview' && (
-                                    <DashboardOverview
-                                        role={user?.role}
-                                        user={user}
-                                        initialData={{
-                                            stats: {
-                                                totalMembers: families.reduce((acc, f) => acc + (f.members?.length || 0), 0),
-                                                activeFamilies: families.length,
-                                                pendingRequests: requests.filter(r => r.status === 'Pending').length,
-                                                pendingApprovals: families.filter(f => f.status === 'Pending').length,
-                                                pendingMemberRequests: memberRequests.length,
-                                                totalFunds: financeStats?.total_collected || 0,
-                                                pendingExpenses: financeStats?.pending_expenses_count || 0,
-                                                activeCollections: financeStats?.active_collections_breakdown || []
-                                            }
-                                        }}
-                                    />
-                                )}
+                            {activeTab === 'overview' && (
+                                <DashboardOverview
+                                    role={user?.role}
+                                    user={user}
+                                    initialData={{
+                                        stats: {
+                                            totalMembers: families.reduce((acc, f) => acc + (f.members?.length || 0), 0),
+                                            activeFamilies: families.length,
+                                            pendingRequests: requests.filter(r => r.status === 'Pending').length,
+                                            pendingApprovals: families.filter(f => f.status === 'Pending').length,
+                                            pendingMemberRequests: memberRequests.length,
+                                            totalFunds: financeStats?.total_collected || 0,
+                                            pendingExpenses: financeStats?.pending_expenses_count || 0,
+                                            activeCollections: financeStats?.active_collections_breakdown || []
+                                        }
+                                    }}
+                                />
+                            )}
 
-                                {activeTab === 'family-list' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Family Directory</h2>
-                                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search by Name or ID..."
-                                                    value={adminFamilySearch}
-                                                    onChange={(e) => setAdminFamilySearch(e.target.value)}
-                                                    style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd', width: '250px' }}
-                                                />
-                                                <select
-                                                    value={adminFamilyFilter}
-                                                    onChange={(e) => setAdminFamilyFilter(e.target.value)}
-                                                    style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd' }}
-                                                >
-                                                    <option value="All">All Status</option>
-                                                    <option value="Approved">Active Members</option>
-                                                    <option value="Pending">Pending</option>
-                                                    <option value="Rejected">Rejected</option>
-                                                </select>
-                                                <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
-                                                    {families.length} Records
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                            {families.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No family records found.</p> : (
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                                    <thead style={{ position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>
-                                                        <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                            <th style={{ padding: '20px' }}>Family ID</th>
-                                                            <th style={{ padding: '20px' }}>Family Head / Name</th>
-                                                            <th style={{ padding: '20px' }}>Status</th>
-                                                            <th style={{ padding: '20px' }}>Current Stage</th>
-                                                            <th style={{ padding: '20px' }}>Members</th>
-                                                            <th style={{ padding: '20px' }}>Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {families
-                                                            .filter(f => {
-                                                                const name = f.head_details?.full_name || f.head_name || '';
-                                                                const id = f.family_unique_id || '';
-                                                                const matchesSearch = name.toLowerCase().includes(adminFamilySearch.toLowerCase()) ||
-                                                                    id.toLowerCase().includes(adminFamilySearch.toLowerCase());
-                                                                const matchesFilter = adminFamilyFilter === 'All' || f.status === adminFamilyFilter;
-                                                                return matchesSearch && matchesFilter;
-                                                            })
-                                                            .map(fam => (
-                                                                <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
-                                                                    <td style={{ padding: '20px', fontWeight: 600 }}>{fam.family_unique_id || 'PENDING'}</td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{cleanName(fam.head_details?.full_name || fam.head_name)}</div>
-                                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'No Mobile'}</div>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <span style={{
-                                                                            padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
-                                                                            background: fam.status === 'Approved' ? '#DEF7EC' : fam.status === 'Rejected' ? '#FEE2E2' : '#FFF3C4',
-                                                                            color: fam.status === 'Approved' ? '#03543F' : fam.status === 'Rejected' ? '#991B1B' : '#B7791F'
-                                                                        }}>
-                                                                            {fam.status}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px', fontSize: '0.85rem' }}>{fam.verification_stage || 'Finalized'}</td>
-                                                                    <td style={{ padding: '20px', fontWeight: 600 }}>{(fam.members?.length || 0) + 1}</td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <button
-                                                                            onClick={() => setViewFamily(fam)}
-                                                                            style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 600, color: '#475569' }}
-                                                                        >
-                                                                            👁️ View Details
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                    </tbody>
-                                                </table>
-                                            )}
+                            {activeTab === 'family-list' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Family Directory</h2>
+                                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                            <input
+                                                type="text"
+                                                placeholder="Search by Name or ID..."
+                                                value={adminFamilySearch}
+                                                onChange={(e) => setAdminFamilySearch(e.target.value)}
+                                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd', width: '250px' }}
+                                            />
+                                            <select
+                                                value={adminFamilyFilter}
+                                                onChange={(e) => setAdminFamilyFilter(e.target.value)}
+                                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd' }}
+                                            >
+                                                <option value="All">All Status</option>
+                                                <option value="Approved">Active Members</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Rejected">Rejected</option>
+                                            </select>
+                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
+                                                {families.length} Records
+                                            </span>
                                         </div>
                                     </div>
-                                )}
 
-                                {activeTab === 'member-directory' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Member Directory</h2>
-                                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search Name, ID or Phone..."
-                                                    value={adminMemberSearch}
-                                                    onChange={(e) => setAdminMemberSearch(e.target.value)}
-                                                    style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd', width: '250px' }}
-                                                />
-                                                <select
-                                                    value={adminMemberFilter}
-                                                    onChange={(e) => setAdminMemberFilter(e.target.value)}
-                                                    style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd' }}
-                                                >
-                                                    <option value="All">All Roles</option>
-                                                    <option value="Head">Family Heads</option>
-                                                    <option value="Member">General Members</option>
-                                                    <option value="Student">Students</option>
-                                                    <option value="Employed">Employed</option>
-                                                    <option value="Business">Business</option>
-                                                </select>
-                                                <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
-                                                    {families.reduce((acc, f) => acc + (f.members?.length || 0) + 1, 0)} Individuals
-                                                </span>
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {families.length === 0 ? (
+                                            <div style={{ padding: '60px 20px', textAlign: 'center', background: 'white' }}>
+                                                <div style={{
+                                                    width: '80px', height: '80px', background: '#f8fafc', borderRadius: '50%',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    margin: '0 auto 20px', color: '#94a3b8'
+                                                }}>
+                                                    <Users size={40} />
+                                                </div>
+                                                <h3 style={{ fontSize: '1.25rem', color: '#1e293b', marginBottom: '8px', fontWeight: 800 }}>No family records found</h3>
+                                                <p style={{ color: '#64748b', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
+                                                    Your family directory is currently empty.
+                                                </p>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                                <thead style={{ position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>
+                                                    <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                        <th style={{ padding: '20px' }}>Family ID</th>
+                                                        <th style={{ padding: '20px' }}>Family Head / Name</th>
+                                                        <th style={{ padding: '20px' }}>Status</th>
+                                                        <th style={{ padding: '20px' }}>Current Stage</th>
+                                                        <th style={{ padding: '20px' }}>Members</th>
+                                                        <th style={{ padding: '20px' }}>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {families
+                                                        .filter(f => {
+                                                            const name = f.head_details?.full_name || f.head_name || '';
+                                                            const id = f.family_unique_id || '';
+                                                            const matchesSearch = name.toLowerCase().includes(adminFamilySearch.toLowerCase()) ||
+                                                                id.toLowerCase().includes(adminFamilySearch.toLowerCase());
+                                                            const matchesFilter = adminFamilyFilter === 'All' || f.status === adminFamilyFilter;
+                                                            return matchesSearch && matchesFilter;
+                                                        })
+                                                        .map(fam => (
+                                                            <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
+                                                                <td style={{ padding: '20px', fontWeight: 600 }}>{fam.family_unique_id || 'PENDING'}</td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{cleanName(fam.head_details?.full_name || fam.head_name)}</div>
+                                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'No Mobile'}</div>
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <span style={{
+                                                                        padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
+                                                                        background: fam.status === 'Approved' ? '#DEF7EC' : fam.status === 'Rejected' ? '#FEE2E2' : '#FFF3C4',
+                                                                        color: fam.status === 'Approved' ? '#03543F' : fam.status === 'Rejected' ? '#991B1B' : '#B7791F'
+                                                                    }}>
+                                                                        {fam.status}
+                                                                    </span>
+                                                                </td>
+                                                                <td style={{ padding: '20px', fontSize: '0.85rem' }}>{fam.verification_stage || 'Finalized'}</td>
+                                                                <td style={{ padding: '20px', fontWeight: 600 }}>{(fam.members?.length || 0) + 1}</td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <button
+                                                                        onClick={() => setViewFamily(fam)}
+                                                                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 600, color: '#475569' }}
+                                                                    >
+                                                                        👁️ View Details
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                </tbody>
+                                            </table>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                            {activeTab === 'member-directory' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Member Directory</h2>
+                                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <input
+                                                type="text"
+                                                placeholder="Search Name, ID or Phone..."
+                                                value={adminMemberSearch}
+                                                onChange={(e) => setAdminMemberSearch(e.target.value)}
+                                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd', width: '250px' }}
+                                            />
+                                            <select
+                                                value={adminMemberFilter}
+                                                onChange={(e) => setAdminMemberFilter(e.target.value)}
+                                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #ddd' }}
+                                            >
+                                                <option value="All">All Roles</option>
+                                                <option value="Head">Family Heads</option>
+                                                <option value="Member">General Members</option>
+                                                <option value="Student">Students</option>
+                                                <option value="Employed">Employed</option>
+                                                <option value="Business">Business</option>
+                                            </select>
+                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
+                                                {families.reduce((acc, f) => acc + (f.members?.length || 0) + 1, 0)} Individuals
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {families.length === 0 ? (
+                                            <div style={{ padding: '60px 20px', textAlign: 'center', background: 'white' }}>
+                                                <div style={{
+                                                    width: '80px', height: '80px', background: '#f8fafc', borderRadius: '50%',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    margin: '0 auto 20px', color: '#94a3b8'
+                                                }}>
+                                                    <Users size={40} />
+                                                </div>
+                                                <h3 style={{ fontSize: '1.25rem', color: '#1e293b', marginBottom: '8px', fontWeight: 800 }}>No members found</h3>
+                                                <p style={{ color: '#64748b', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
+                                                    There are no individual member records available. Members are automatically listed here once a family is registered.
+                                                </p>
+                                                <button
+                                                    onClick={() => navigate('/signup')}
+                                                    style={{
+                                                        padding: '10px 20px', background: 'var(--primary-blue)', color: 'white',
+                                                        border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', gap: '8px', margin: '0 auto'
+                                                    }}
+                                                >
+                                                    <Plus size={18} /> Register First Family
+                                                </button>
+                                            </div>
+                                        ) : (
                                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                                 <thead style={{ position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>
                                                     <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -1055,463 +1104,519 @@ const AdminDashboard = () => {
                                                         ))}
                                                 </tbody>
                                             </table>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+
+                            {activeTab === 'pending-registrations' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Pending Family Registrations</h2>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
+                                                {families.filter(f => f.status === 'Pending').length} Pending
+                                            </span>
+                                            <button
+                                                onClick={() => {
+                                                    console.log("🔄 Manual refresh triggered");
+                                                    setFamilies([]);
+                                                    fetchData();
+                                                }}
+                                                style={{
+                                                    padding: '6px 14px',
+                                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '10px',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 700,
+                                                    fontSize: '0.85rem',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px'
+                                                }}
+                                            >
+                                                🔄 Refresh Data
+                                            </button>
                                         </div>
                                     </div>
-                                )}
 
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {families.filter(f => f.status === 'Pending').length === 0 ? (
+                                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>✅ No pending registration requests. All applications have been processed!</p>
+                                        ) : (
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                                <thead>
+                                                    <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                        <th style={{ padding: '20px' }}>Family / Head</th>
+                                                        <th style={{ padding: '20px' }}>Origin</th>
+                                                        <th style={{ padding: '20px' }}>Current Stage</th>
+                                                        <th style={{ padding: '20px' }}>Coordinator</th>
+                                                        <th style={{ padding: '20px' }}>Contact</th>
+                                                        <th style={{ padding: '20px' }}>Action Center</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {families.filter(f => f.status === 'Pending').map(fam => {
+                                                        const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
+                                                        const isAssignedCoord = fam.coordinator_id === user.id;
 
-                                {activeTab === 'pending-registrations' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Pending Family Registrations</h2>
-                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
-                                                    {families.filter(f => f.status === 'Pending').length} Pending
-                                                </span>
-                                                <button
-                                                    onClick={() => {
-                                                        console.log("🔄 Manual refresh triggered");
-                                                        setFamilies([]);
-                                                        fetchData();
-                                                    }}
-                                                    style={{
-                                                        padding: '6px 14px',
-                                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '10px',
-                                                        cursor: 'pointer',
-                                                        fontWeight: 700,
-                                                        fontSize: '0.85rem',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px'
-                                                    }}
-                                                >
-                                                    🔄 Refresh Data
-                                                </button>
-                                            </div>
-                                        </div>
+                                                        const isPresident = ['president', 'vice_president'].includes(user?.position);
+                                                        const isSecretary = ['secretary', 'joint_secretary'].includes(user?.position);
+                                                        const isCommittee = isPresident || isSecretary || user?.role === 'admin' || user?.role === 'super_admin';
+                                                        const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+                                                        const isSuperAdmin = user?.role === 'super_admin';
 
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                            {families.filter(f => f.status === 'Pending').length === 0 ? (
-                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>✅ No pending registration requests. All applications have been processed!</p>
-                                            ) : (
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                                    <thead>
-                                                        <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                            <th style={{ padding: '20px' }}>Family / Head</th>
-                                                            <th style={{ padding: '20px' }}>Origin</th>
-                                                            <th style={{ padding: '20px' }}>Current Stage</th>
-                                                            <th style={{ padding: '20px' }}>Coordinator</th>
-                                                            <th style={{ padding: '20px' }}>Contact</th>
-                                                            <th style={{ padding: '20px' }}>Action Center</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {families.filter(f => f.status === 'Pending').map(fam => {
-                                                            const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
-                                                            const isAssignedCoord = fam.coordinator_id === user.id;
-
-                                                            const isPresident = ['president', 'vice_president'].includes(user?.position);
-                                                            const isSecretary = ['secretary', 'joint_secretary'].includes(user?.position);
-                                                            const isCommittee = isPresident || isSecretary || user?.role === 'admin' || user?.role === 'super_admin';
-                                                            const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
-                                                            const isSuperAdmin = user?.role === 'super_admin';
-
-                                                            // Verification Permissions
-                                                            const canVerify =
-                                                                isSuperAdmin ||
-                                                                (isAdmin && !hasActiveCommittee) ||
-                                                                (hasActiveCommittee && (
-                                                                    (fam.verification_stage === 'Recommender Verification' && fam.recommender_id === user.id) ||
-                                                                    (fam.verification_stage === 'President Scrutiny' && isPresident) ||
-                                                                    (fam.verification_stage === 'Secretary Scrutiny' && isSecretary) ||
-                                                                    (fam.verification_stage === 'Coordinator Scrutiny' && (isAssignedCoord || isSecretary)) ||
-                                                                    (fam.verification_stage === 'President Approval' && isPresident)
-                                                                ));
-
-                                                            // Assignment Permissions (Secretary Only during Secretary Scrutiny)
-                                                            const showAssign = fam.status === 'Pending' && fam.verification_stage === 'Secretary Scrutiny' && (isSecretary || (isAdmin && !hasActiveCommittee));
-
-                                                            return (
-                                                                <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
-                                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <span style={{ fontSize: '0.8rem', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', background: fam.join_method === 'Recommendation' ? '#E0F2F1' : '#F3E5F5', color: fam.join_method === 'Recommendation' ? '#00695C' : '#7B1FA2' }}>
-                                                                            {fam.join_method || 'Direct'}
-                                                                        </span>
-                                                                        {fam.recommender_name && <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Ref: {fam.recommender_name}</div>}
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <span style={{
-                                                                            padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
-                                                                            background: '#FFF3C4',
-                                                                            color: '#B7791F'
-                                                                        }}>
-                                                                            {fam.verification_stage || 'Pending'}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        {fam.coordinator_name ? (
-                                                                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{fam.coordinator_name}</div>
-                                                                        ) : (
-                                                                            <span style={{ fontSize: '0.8rem', color: '#ccc', fontStyle: 'italic' }}>Not Assigned</span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'N/A'}</td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <button
-                                                                            onClick={() => setViewFamily(fam)}
-                                                                            style={{
-                                                                                padding: '6px 12px',
-                                                                                borderRadius: '6px',
-                                                                                border: '1px solid #e2e8f0',
-                                                                                background: 'white',
-                                                                                cursor: 'pointer',
-                                                                                marginBottom: '8px',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                gap: '6px',
-                                                                                fontWeight: 600,
-                                                                                color: '#475569',
-                                                                                width: '100%'
-                                                                            }}
-                                                                        >
-                                                                            <span>👁️</span> View Application
-                                                                        </button>
-                                                                        {/* Coordinator Assignment Dropdown - SECRETARY ONLY */}
-                                                                        {fam.verification_stage === 'Secretary Scrutiny' && !fam.coordinator_id && isSecretary && (
-                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-                                                                                <select
-                                                                                    id={`coordinator-select-${fam._id}`}
-                                                                                    value={selectedAssignments[fam._id] || ""}
-                                                                                    onChange={(e) => setSelectedAssignments({ ...selectedAssignments, [fam._id]: e.target.value })}
-                                                                                    style={{
-                                                                                        padding: '8px 12px',
-                                                                                        borderRadius: '8px',
-                                                                                        border: '1.5px solid #cbd5e1',
-                                                                                        fontSize: '0.85rem',
-                                                                                        fontWeight: 600,
-                                                                                        color: '#334155',
-                                                                                        background: '#f8fafc',
-                                                                                        cursor: 'pointer',
-                                                                                        width: '100%'
-                                                                                    }}
-                                                                                >
-                                                                                    <option value="">Select Coordinator</option>
-                                                                                    {coordinators.map(coord => (
-                                                                                        <option key={coord.id || coord._id} value={coord.id || coord._id}>
-                                                                                            {coord.name}
-                                                                                        </option>
-                                                                                    ))}
-                                                                                </select>
-
-                                                                                <button
-                                                                                    onClick={() => {
-                                                                                        const selectedId = selectedAssignments[fam._id || fam.id];
-                                                                                        const selectedCoord = coordinators.find(c => (c.id === selectedId || c._id === selectedId));
-
-                                                                                        if (selectedCoord) {
-                                                                                            if (window.confirm(`Lock assignment to ${selectedCoord.name} and forward for scrutiny?`)) {
-                                                                                                // Chain assignment and verification
-                                                                                                handleAssignCoordinator(fam._id || fam.id, selectedCoord.id || selectedCoord._id, selectedCoord.name)
-                                                                                                    .then(() => handleVerifyStage(fam._id || fam.id, "", fam.verification_stage));
-                                                                                            }
-                                                                                        } else {
-                                                                                            alert("Please select a coordinator first.");
-                                                                                        }
-                                                                                    }}
-                                                                                    style={{
-                                                                                        background: '#f59e0b',
-                                                                                        color: 'white',
-                                                                                        border: 'none',
-                                                                                        padding: '8px',
-                                                                                        borderRadius: '6px',
-                                                                                        fontSize: '0.8rem',
-                                                                                        fontWeight: 700,
-                                                                                        cursor: 'pointer',
-                                                                                        display: 'flex',
-                                                                                        alignItems: 'center',
-                                                                                        justifyContent: 'center',
-                                                                                        gap: '6px'
-                                                                                    }}
-                                                                                >
-                                                                                    <span>🔒</span> Lock & Forward
-                                                                                </button>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {fam.status !== 'Approved' && !showAssign && (
-                                                                            canVerify ? (
-                                                                                fam.verification_stage === 'President Approval' ? (
-                                                                                    <button
-                                                                                        onClick={() => handleApproveFamily(fam._id)}
-                                                                                        style={{ padding: '8px 18px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', width: '100%' }}
-                                                                                    >
-                                                                                        ✅ Final Approval
-                                                                                    </button>
-                                                                                ) : (
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            setVerifyModal({ open: true, family: fam, stage: fam.verification_stage });
-                                                                                            setVerifyRemark('');
-                                                                                        }}
-                                                                                        style={{
-                                                                                            padding: '8px 18px',
-                                                                                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                                                            color: 'white',
-                                                                                            border: 'none',
-                                                                                            borderRadius: '10px',
-                                                                                            cursor: 'pointer',
-                                                                                            fontWeight: 700,
-                                                                                            fontSize: '0.85rem',
-                                                                                            width: '100%',
-                                                                                            display: 'flex',
-                                                                                            alignItems: 'center',
-                                                                                            justifyContent: 'center',
-                                                                                            gap: '6px'
-                                                                                        }}
-                                                                                    >
-                                                                                        <span>✓</span> Verify & Forward
-                                                                                    </button>
-                                                                                )
-                                                                            ) : (
-                                                                                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>Awaiting {fam.verification_stage}</span>
-                                                                            )
-                                                                        )}
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody>
-                                                </table>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {activeTab === 'families' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Family Registrations</h2>
-                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{families.length} Total</span>
-                                        </div>
-
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                            {families.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No registration data found.</p> : (
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                                    <thead>
-                                                        <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                            <th style={{ padding: '20px' }}>Family / Head</th>
-                                                            <th style={{ padding: '20px' }}>Origin</th>
-                                                            <th style={{ padding: '20px' }}>Current Stage</th>
-                                                            <th style={{ padding: '20px' }}>Coordinator</th>
-                                                            <th style={{ padding: '20px' }}>Contact</th>
-                                                            <th style={{ padding: '20px' }}>Action Center</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {families.filter(f => f.status === 'Pending').map(fam => {
-                                                            const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
-                                                            const isAssignedCoord = fam.coordinator_id === user.id;
-
-                                                            const isPresident = ['president', 'vice_president'].includes(user?.position);
-                                                            const isSecretary = ['secretary', 'joint_secretary'].includes(user?.position);
-                                                            const isCommittee = isPresident || isSecretary || user?.role === 'admin' || user?.role === 'super_admin';
-                                                            const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
-
-                                                            // Verification Permissions
-                                                            const canVerify =
-                                                                isAdmin || // Admins can verify at any stage
+                                                        // Verification Permissions
+                                                        const canVerify =
+                                                            isSuperAdmin ||
+                                                            (isAdmin && !hasActiveCommittee) ||
+                                                            (hasActiveCommittee && (
                                                                 (fam.verification_stage === 'Recommender Verification' && fam.recommender_id === user.id) ||
                                                                 (fam.verification_stage === 'President Scrutiny' && isPresident) ||
                                                                 (fam.verification_stage === 'Secretary Scrutiny' && isSecretary) ||
                                                                 (fam.verification_stage === 'Coordinator Scrutiny' && (isAssignedCoord || isSecretary)) ||
-                                                                (fam.verification_stage === 'President Approval' && isPresident); // President gives final approval
+                                                                (fam.verification_stage === 'President Approval' && isPresident)
+                                                            ));
 
-                                                            // Assignment Permissions (Secretary Only during Secretary Scrutiny)
-                                                            const showAssign = fam.status === 'Pending' && fam.verification_stage === 'Secretary Scrutiny' && isSecretary;
+                                                        // Assignment Permissions (Secretary Only during Secretary Scrutiny)
+                                                        const showAssign = fam.status === 'Pending' && fam.verification_stage === 'Secretary Scrutiny' && (isSecretary || (isAdmin && !hasActiveCommittee));
 
+                                                        return (
+                                                            <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
+                                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <span style={{ fontSize: '0.8rem', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', background: fam.join_method === 'Recommendation' ? '#E0F2F1' : '#F3E5F5', color: fam.join_method === 'Recommendation' ? '#00695C' : '#7B1FA2' }}>
+                                                                        {fam.join_method || 'Direct'}
+                                                                    </span>
+                                                                    {fam.recommender_name && <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Ref: {fam.recommender_name}</div>}
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <span style={{
+                                                                        padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
+                                                                        background: '#FFF3C4',
+                                                                        color: '#B7791F'
+                                                                    }}>
+                                                                        {fam.verification_stage || 'Pending'}
+                                                                    </span>
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    {fam.coordinator_name ? (
+                                                                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{fam.coordinator_name}</div>
+                                                                    ) : (
+                                                                        <span style={{ fontSize: '0.8rem', color: '#ccc', fontStyle: 'italic' }}>Not Assigned</span>
+                                                                    )}
+                                                                </td>
+                                                                <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'N/A'}</td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <button
+                                                                        onClick={() => setViewFamily(fam)}
+                                                                        style={{
+                                                                            padding: '6px 12px',
+                                                                            borderRadius: '6px',
+                                                                            border: '1px solid #e2e8f0',
+                                                                            background: 'white',
+                                                                            cursor: 'pointer',
+                                                                            marginBottom: '8px',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            gap: '6px',
+                                                                            fontWeight: 600,
+                                                                            color: '#475569',
+                                                                            width: '100%'
+                                                                        }}
+                                                                    >
+                                                                        <span>👁️</span> View Application
+                                                                    </button>
+                                                                    {/* Coordinator Assignment Dropdown - SECRETARY ONLY */}
+                                                                    {fam.verification_stage === 'Secretary Scrutiny' && !fam.coordinator_id && isSecretary && (
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+                                                                            <select
+                                                                                id={`coordinator-select-${fam._id}`}
+                                                                                value={selectedAssignments[fam._id] || ""}
+                                                                                onChange={(e) => setSelectedAssignments({ ...selectedAssignments, [fam._id]: e.target.value })}
+                                                                                style={{
+                                                                                    padding: '8px 12px',
+                                                                                    borderRadius: '8px',
+                                                                                    border: '1.5px solid #cbd5e1',
+                                                                                    fontSize: '0.85rem',
+                                                                                    fontWeight: 600,
+                                                                                    color: '#334155',
+                                                                                    background: '#f8fafc',
+                                                                                    cursor: 'pointer',
+                                                                                    width: '100%'
+                                                                                }}
+                                                                            >
+                                                                                <option value="">Select Coordinator</option>
+                                                                                {coordinators.map(coord => (
+                                                                                    <option key={coord.id || coord._id} value={coord.id || coord._id}>
+                                                                                        {coord.name}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
 
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    const selectedId = selectedAssignments[fam._id || fam.id];
+                                                                                    const selectedCoord = coordinators.find(c => (c.id === selectedId || c._id === selectedId));
 
-                                                            return (
-                                                                <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
-                                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <span style={{ fontSize: '0.8rem', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', background: fam.join_method === 'Recommendation' ? '#E0F2F1' : '#F3E5F5', color: fam.join_method === 'Recommendation' ? '#00695C' : '#7B1FA2' }}>
-                                                                            {fam.join_method || 'Direct'}
-                                                                        </span>
-                                                                        {fam.recommender_name && <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Ref: {fam.recommender_name}</div>}
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <span style={{
-                                                                            padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
-                                                                            background: fam.status === 'Approved' ? '#DEF7EC' : '#FFF3C4',
-                                                                            color: fam.status === 'Approved' ? '#03543F' : '#B7791F'
-                                                                        }}>
-                                                                            {fam.status === 'Approved' ? 'Active Member' : (fam.verification_stage || 'Pending')}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        {fam.coordinator_name ? (
-                                                                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{fam.coordinator_name}</div>
-                                                                        ) : (
-                                                                            <span style={{ fontSize: '0.8rem', color: '#ccc', fontStyle: 'italic' }}>Not Assigned</span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'N/A'}</td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <button
-                                                                            onClick={() => setViewFamily(fam)}
-                                                                            style={{
-                                                                                padding: '6px 12px',
-                                                                                borderRadius: '6px',
-                                                                                border: '1px solid #e2e8f0',
-                                                                                background: 'white',
-                                                                                cursor: 'pointer',
-                                                                                marginBottom: '8px',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                gap: '6px',
-                                                                                fontWeight: 600,
-                                                                                color: '#475569',
-                                                                                width: '100%'
-                                                                            }}
-                                                                        >
-                                                                            <span>👁️</span> View Application
-                                                                        </button>
-                                                                        {/* Coordinator Assignment Dropdown - SECRETARY ONLY */}
-                                                                        {fam.verification_stage === 'Secretary Scrutiny' && !fam.coordinator_id && isSecretary && (
-                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-                                                                                <select
-                                                                                    id={`coordinator-select-${fam._id}`}
-                                                                                    value={selectedAssignments[fam._id] || ""}
-                                                                                    onChange={(e) => setSelectedAssignments({ ...selectedAssignments, [fam._id]: e.target.value })}
-                                                                                    style={{
-                                                                                        padding: '8px 12px',
-                                                                                        borderRadius: '8px',
-                                                                                        border: '1.5px solid #cbd5e1',
-                                                                                        fontSize: '0.85rem',
-                                                                                        fontWeight: 600,
-                                                                                        color: '#334155',
-                                                                                        background: '#f8fafc',
-                                                                                        cursor: 'pointer',
-                                                                                        width: '100%'
-                                                                                    }}
+                                                                                    if (selectedCoord) {
+                                                                                        if (window.confirm(`Lock assignment to ${selectedCoord.name} and forward for scrutiny?`)) {
+                                                                                            // Chain assignment and verification
+                                                                                            handleAssignCoordinator(fam._id || fam.id, selectedCoord.id || selectedCoord._id, selectedCoord.name)
+                                                                                                .then(() => handleVerifyStage(fam._id || fam.id, "", fam.verification_stage));
+                                                                                        }
+                                                                                    } else {
+                                                                                        alert("Please select a coordinator first.");
+                                                                                    }
+                                                                                }}
+                                                                                style={{
+                                                                                    background: '#f59e0b',
+                                                                                    color: 'white',
+                                                                                    border: 'none',
+                                                                                    padding: '8px',
+                                                                                    borderRadius: '6px',
+                                                                                    fontSize: '0.8rem',
+                                                                                    fontWeight: 700,
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    gap: '6px'
+                                                                                }}
+                                                                            >
+                                                                                <span>🔒</span> Lock & Forward
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {fam.status !== 'Approved' && !showAssign && (
+                                                                        canVerify ? (
+                                                                            fam.verification_stage === 'President Approval' ? (
+                                                                                <button
+                                                                                    onClick={() => handleApproveFamily(fam._id)}
+                                                                                    style={{ padding: '8px 18px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', width: '100%' }}
                                                                                 >
-                                                                                    <option value="">Select Coordinator</option>
-                                                                                    {coordinators.map(coord => (
-                                                                                        <option key={coord.id || coord._id} value={coord.id || coord._id}>
-                                                                                            {coord.name}
-                                                                                        </option>
-                                                                                    ))}
-                                                                                </select>
-
+                                                                                    ✅ Final Approval
+                                                                                </button>
+                                                                            ) : (
                                                                                 <button
                                                                                     onClick={() => {
-                                                                                        const selectedId = selectedAssignments[fam._id || fam.id];
-                                                                                        const selectedCoord = coordinators.find(c => (c.id === selectedId || c._id === selectedId));
-
-                                                                                        if (selectedCoord) {
-                                                                                            if (window.confirm(`Lock assignment to ${selectedCoord.name} and forward for scrutiny?`)) {
-                                                                                                // Chain assignment and verification
-                                                                                                handleAssignCoordinator(fam._id || fam.id, selectedCoord.id || selectedCoord._id, selectedCoord.name)
-                                                                                                    .then(() => handleVerifyStage(fam._id || fam.id, fam.verification_stage, true));
-                                                                                            }
-                                                                                        } else {
-                                                                                            alert("Please select a coordinator first.");
-                                                                                        }
+                                                                                        setVerifyModal({ open: true, family: fam, stage: fam.verification_stage });
+                                                                                        setVerifyRemark('');
                                                                                     }}
                                                                                     style={{
-                                                                                        background: '#f59e0b',
+                                                                                        padding: '8px 18px',
+                                                                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                                                                         color: 'white',
                                                                                         border: 'none',
-                                                                                        padding: '8px',
-                                                                                        borderRadius: '6px',
-                                                                                        fontSize: '0.8rem',
-                                                                                        fontWeight: 700,
+                                                                                        borderRadius: '10px',
                                                                                         cursor: 'pointer',
+                                                                                        fontWeight: 700,
+                                                                                        fontSize: '0.85rem',
+                                                                                        width: '100%',
                                                                                         display: 'flex',
                                                                                         alignItems: 'center',
                                                                                         justifyContent: 'center',
                                                                                         gap: '6px'
                                                                                     }}
                                                                                 >
-                                                                                    <span>🔒</span> Lock & Forward
+                                                                                    <span>✓</span> Verify & Forward
                                                                                 </button>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {fam.status !== 'Approved' && !showAssign && (
-                                                                            canVerify ? (
-                                                                                fam.verification_stage === 'President Approval' ? (
-                                                                                    <button
-                                                                                        onClick={() => handleApproveFamily(fam._id)}
-                                                                                        style={{ padding: '8px 18px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', width: '100%' }}
-                                                                                    >
-                                                                                        ✅ Final Approval
-                                                                                    </button>
-                                                                                ) : (
-                                                                                    <button
-                                                                                        onClick={() => handleVerifyStage(fam._id, fam.verification_stage, fam.coordinator_id)}
-                                                                                        style={{
-                                                                                            padding: '8px 18px',
-                                                                                            background: 'var(--info)',
-                                                                                            color: 'white',
-                                                                                            border: 'none',
-                                                                                            borderRadius: '10px',
-                                                                                            cursor: 'pointer',
-                                                                                            fontWeight: 700,
-                                                                                            fontSize: '0.85rem',
-                                                                                            width: '100%'
-                                                                                        }}
-                                                                                    >
-                                                                                        ✓ Verify & Forward
-                                                                                    </button>
-                                                                                )
-                                                                            ) : (
-                                                                                <span style={{ fontSize: '0.8rem', color: '#999', fontStyle: 'italic' }}>
-                                                                                    {fam.verification_stage === 'Secretary Scrutiny' ? 'Under Secretary Review' :
-                                                                                        fam.verification_stage === 'Coordinator Scrutiny' ? `With Coordinator (${fam.coordinator_name})` :
-                                                                                            fam.verification_stage === 'President Approval' ? 'Awaiting President Approval' :
-                                                                                                `Pending ${fam.verification_stage}`}
-                                                                                </span>
                                                                             )
-                                                                        )}
+                                                                        ) : (
+                                                                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>Awaiting {fam.verification_stage}</span>
+                                                                        )
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
-                                                                        {/* Coordinator Help Request Button */}
-                                                                        {fam.status === 'Approved' && (user.role === 'coordinator' || user.position === 'coordinator' || user.role === 'admin' || user.role === 'super_admin') && (
-                                                                            <button
-                                                                                onClick={() => setHelpModal({
-                                                                                    open: true,
-                                                                                    familyId: fam._id,
-                                                                                    familyName: fam.head_details?.full_name || fam.head_name
-                                                                                })}
+                            {activeTab === 'families' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Family Registrations</h2>
+                                        <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{families.length} Total</span>
+                                    </div>
+
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {families.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No registration data found.</p> : (
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                                <thead>
+                                                    <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                        <th style={{ padding: '20px' }}>Family / Head</th>
+                                                        <th style={{ padding: '20px' }}>Origin</th>
+                                                        <th style={{ padding: '20px' }}>Current Stage</th>
+                                                        <th style={{ padding: '20px' }}>Coordinator</th>
+                                                        <th style={{ padding: '20px' }}>Contact</th>
+                                                        <th style={{ padding: '20px' }}>Action Center</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {families.filter(f => f.status === 'Pending').map(fam => {
+                                                        const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
+                                                        const isAssignedCoord = fam.coordinator_id === user.id;
+
+                                                        const isPresident = ['president', 'vice_president'].includes(user?.position);
+                                                        const isSecretary = ['secretary', 'joint_secretary'].includes(user?.position);
+                                                        const isCommittee = isPresident || isSecretary || user?.role === 'admin' || user?.role === 'super_admin';
+                                                        const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
+                                                        // Verification Permissions
+                                                        const canVerify =
+                                                            isAdmin || // Admins can verify at any stage
+                                                            (fam.verification_stage === 'Recommender Verification' && fam.recommender_id === user.id) ||
+                                                            (fam.verification_stage === 'President Scrutiny' && isPresident) ||
+                                                            (fam.verification_stage === 'Secretary Scrutiny' && isSecretary) ||
+                                                            (fam.verification_stage === 'Coordinator Scrutiny' && (isAssignedCoord || isSecretary)) ||
+                                                            (fam.verification_stage === 'President Approval' && isPresident); // President gives final approval
+
+                                                        // Assignment Permissions (Secretary Only during Secretary Scrutiny)
+                                                        const showAssign = fam.status === 'Pending' && fam.verification_stage === 'Secretary Scrutiny' && isSecretary;
+
+
+
+                                                        return (
+                                                            <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
+                                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <span style={{ fontSize: '0.8rem', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', background: fam.join_method === 'Recommendation' ? '#E0F2F1' : '#F3E5F5', color: fam.join_method === 'Recommendation' ? '#00695C' : '#7B1FA2' }}>
+                                                                        {fam.join_method || 'Direct'}
+                                                                    </span>
+                                                                    {fam.recommender_name && <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Ref: {fam.recommender_name}</div>}
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <span style={{
+                                                                        padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
+                                                                        background: fam.status === 'Approved' ? '#DEF7EC' : '#FFF3C4',
+                                                                        color: fam.status === 'Approved' ? '#03543F' : '#B7791F'
+                                                                    }}>
+                                                                        {fam.status === 'Approved' ? 'Active Member' : (fam.verification_stage || 'Pending')}
+                                                                    </span>
+                                                                </td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    {fam.coordinator_name ? (
+                                                                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{fam.coordinator_name}</div>
+                                                                    ) : (
+                                                                        <span style={{ fontSize: '0.8rem', color: '#ccc', fontStyle: 'italic' }}>Not Assigned</span>
+                                                                    )}
+                                                                </td>
+                                                                <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{fam.head_details?.mobile || 'N/A'}</td>
+                                                                <td style={{ padding: '20px' }}>
+                                                                    <button
+                                                                        onClick={() => setViewFamily(fam)}
+                                                                        style={{
+                                                                            padding: '6px 12px',
+                                                                            borderRadius: '6px',
+                                                                            border: '1px solid #e2e8f0',
+                                                                            background: 'white',
+                                                                            cursor: 'pointer',
+                                                                            marginBottom: '8px',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            gap: '6px',
+                                                                            fontWeight: 600,
+                                                                            color: '#475569',
+                                                                            width: '100%'
+                                                                        }}
+                                                                    >
+                                                                        <span>👁️</span> View Application
+                                                                    </button>
+                                                                    {/* Coordinator Assignment Dropdown - SECRETARY ONLY */}
+                                                                    {fam.verification_stage === 'Secretary Scrutiny' && !fam.coordinator_id && isSecretary && (
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+                                                                            <select
+                                                                                id={`coordinator-select-${fam._id}`}
+                                                                                value={selectedAssignments[fam._id] || ""}
+                                                                                onChange={(e) => setSelectedAssignments({ ...selectedAssignments, [fam._id]: e.target.value })}
                                                                                 style={{
-                                                                                    padding: '8px 14px',
-                                                                                    marginTop: '8px',
-                                                                                    background: '#E0F2FE',
-                                                                                    color: '#0284C7',
-                                                                                    border: '1px solid #BAE6FD',
+                                                                                    padding: '8px 12px',
                                                                                     borderRadius: '8px',
-                                                                                    cursor: 'pointer',
+                                                                                    border: '1.5px solid #cbd5e1',
+                                                                                    fontSize: '0.85rem',
                                                                                     fontWeight: 600,
-                                                                                    fontSize: '0.75rem',
-                                                                                    display: 'flex', alignItems: 'center', gap: '6px'
+                                                                                    color: '#334155',
+                                                                                    background: '#f8fafc',
+                                                                                    cursor: 'pointer',
+                                                                                    width: '100%'
                                                                                 }}
                                                                             >
-                                                                                <span>🤝</span> Request Help
+                                                                                <option value="">Select Coordinator</option>
+                                                                                {coordinators.map(coord => (
+                                                                                    <option key={coord.id || coord._id} value={coord.id || coord._id}>
+                                                                                        {coord.name}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
+
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    const selectedId = selectedAssignments[fam._id || fam.id];
+                                                                                    const selectedCoord = coordinators.find(c => (c.id === selectedId || c._id === selectedId));
+
+                                                                                    if (selectedCoord) {
+                                                                                        if (window.confirm(`Lock assignment to ${selectedCoord.name} and forward for scrutiny?`)) {
+                                                                                            // Chain assignment and verification
+                                                                                            handleAssignCoordinator(fam._id || fam.id, selectedCoord.id || selectedCoord._id, selectedCoord.name)
+                                                                                                .then(() => handleVerifyStage(fam._id || fam.id, fam.verification_stage, true));
+                                                                                        }
+                                                                                    } else {
+                                                                                        alert("Please select a coordinator first.");
+                                                                                    }
+                                                                                }}
+                                                                                style={{
+                                                                                    background: '#f59e0b',
+                                                                                    color: 'white',
+                                                                                    border: 'none',
+                                                                                    padding: '8px',
+                                                                                    borderRadius: '6px',
+                                                                                    fontSize: '0.8rem',
+                                                                                    fontWeight: 700,
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    gap: '6px'
+                                                                                }}
+                                                                            >
+                                                                                <span>🔒</span> Lock & Forward
                                                                             </button>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {fam.status !== 'Approved' && !showAssign && (
+                                                                        canVerify ? (
+                                                                            fam.verification_stage === 'President Approval' ? (
+                                                                                <button
+                                                                                    onClick={() => handleApproveFamily(fam._id)}
+                                                                                    style={{ padding: '8px 18px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', width: '100%' }}
+                                                                                >
+                                                                                    ✅ Final Approval
+                                                                                </button>
+                                                                            ) : (
+                                                                                <button
+                                                                                    onClick={() => handleVerifyStage(fam._id, fam.verification_stage, fam.coordinator_id)}
+                                                                                    style={{
+                                                                                        padding: '8px 18px',
+                                                                                        background: 'var(--info)',
+                                                                                        color: 'white',
+                                                                                        border: 'none',
+                                                                                        borderRadius: '10px',
+                                                                                        cursor: 'pointer',
+                                                                                        fontWeight: 700,
+                                                                                        fontSize: '0.85rem',
+                                                                                        width: '100%'
+                                                                                    }}
+                                                                                >
+                                                                                    ✓ Verify & Forward
+                                                                                </button>
+                                                                            )
+                                                                        ) : (
+                                                                            <span style={{ fontSize: '0.8rem', color: '#999', fontStyle: 'italic' }}>
+                                                                                {fam.verification_stage === 'Secretary Scrutiny' ? 'Under Secretary Review' :
+                                                                                    fam.verification_stage === 'Coordinator Scrutiny' ? `With Coordinator (${fam.coordinator_name})` :
+                                                                                        fam.verification_stage === 'President Approval' ? 'Awaiting President Approval' :
+                                                                                            `Pending ${fam.verification_stage}`}
+                                                                            </span>
+                                                                        )
+                                                                    )}
+
+                                                                    {/* Coordinator Help Request Button */}
+                                                                    {fam.status === 'Approved' && (user.role === 'coordinator' || user.position === 'coordinator' || user.role === 'admin' || user.role === 'super_admin') && (
+                                                                        <button
+                                                                            onClick={() => setHelpModal({
+                                                                                open: true,
+                                                                                familyId: fam._id,
+                                                                                familyName: fam.head_details?.full_name || fam.head_name
+                                                                            })}
+                                                                            style={{
+                                                                                padding: '8px 14px',
+                                                                                marginTop: '8px',
+                                                                                background: '#E0F2FE',
+                                                                                color: '#0284C7',
+                                                                                border: '1px solid #BAE6FD',
+                                                                                borderRadius: '8px',
+                                                                                cursor: 'pointer',
+                                                                                fontWeight: 600,
+                                                                                fontSize: '0.75rem',
+                                                                                display: 'flex', alignItems: 'center', gap: '6px'
+                                                                            }}
+                                                                        >
+                                                                            <span>🤝</span> Request Help
+                                                                        </button>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        )}
+                                    </div>
+
+                                    {/* Member Requests Section */}
+                                    <div style={{ marginTop: '40px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Member Addition Requests</h2>
+                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{memberRequests?.length || 0} Requests</span>
+                                        </div>
+
+                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                            {memberRequests.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No new member requests.</p> : (
+                                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                                    <thead>
+                                                        <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                            <th style={{ padding: '20px' }}>Member Name</th>
+                                                            <th style={{ padding: '20px' }}>Family Head</th>
+                                                            <th style={{ padding: '20px' }}>Relation</th>
+                                                            <th style={{ padding: '20px' }}>Stage</th>
+                                                            <th style={{ padding: '20px' }}>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {memberRequests.map(req => {
+                                                            const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
+                                                            const canVerify = (req.verification_stage === 'Coordinator Scrutiny' && isCoordinator) ||
+                                                                (req.verification_stage === 'Committee Approval' && isCommittee);
+
+                                                            return (
+                                                                <tr key={req.request_id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                                                    <td style={{ padding: '20px', fontWeight: 'bold' }}>{cleanName(req.member.full_name)}</td>
+                                                                    <td style={{ padding: '20px' }}>{req.head_name} ({req.family_unique_id})</td>
+                                                                    <td style={{ padding: '20px' }}>{req.member.relation}</td>
+                                                                    <td style={{ padding: '20px' }}>
+                                                                        <span style={{
+                                                                            padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600,
+                                                                            background: '#FFF3C4', color: '#B7791F'
+                                                                        }}>
+                                                                            {req.verification_stage}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style={{ padding: '20px' }}>
+                                                                        {canVerify && req.verification_stage === 'Coordinator Scrutiny' && (
+                                                                            <button onClick={() => handleMemberAction(req.request_id, 'verify')} style={{ padding: '6px 12px', background: 'var(--info)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Verify & Forward</button>
                                                                         )}
+                                                                        {canVerify && req.verification_stage === 'Committee Approval' && (
+                                                                            <button onClick={() => handleMemberAction(req.request_id, 'approve')} style={{ padding: '6px 12px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Final Approve</button>
+                                                                        )}
+                                                                        {!canVerify && <span style={{ color: '#ccc', fontStyle: 'italic', fontSize: '0.8rem' }}>Pending {req.verification_stage}...</span>}
                                                                     </td>
                                                                 </tr>
                                                             );
@@ -1520,297 +1625,255 @@ const AdminDashboard = () => {
                                                 </table>
                                             )}
                                         </div>
-
-                                        {/* Member Requests Section */}
-                                        <div style={{ marginTop: '40px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                                                <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Member Addition Requests</h2>
-                                                <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{memberRequests?.length || 0} Requests</span>
-                                            </div>
-
-                                            <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                                {memberRequests.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No new member requests.</p> : (
-                                                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                                        <thead>
-                                                            <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                                <th style={{ padding: '20px' }}>Member Name</th>
-                                                                <th style={{ padding: '20px' }}>Family Head</th>
-                                                                <th style={{ padding: '20px' }}>Relation</th>
-                                                                <th style={{ padding: '20px' }}>Stage</th>
-                                                                <th style={{ padding: '20px' }}>Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {memberRequests.map(req => {
-                                                                const isCoordinator = user?.role === 'admin' || user?.role === 'super_admin' || user?.position === 'coordinator';
-                                                                const canVerify = (req.verification_stage === 'Coordinator Scrutiny' && isCoordinator) ||
-                                                                    (req.verification_stage === 'Committee Approval' && isCommittee);
-
-                                                                return (
-                                                                    <tr key={req.request_id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                                                        <td style={{ padding: '20px', fontWeight: 'bold' }}>{cleanName(req.member.full_name)}</td>
-                                                                        <td style={{ padding: '20px' }}>{req.head_name} ({req.family_unique_id})</td>
-                                                                        <td style={{ padding: '20px' }}>{req.member.relation}</td>
-                                                                        <td style={{ padding: '20px' }}>
-                                                                            <span style={{
-                                                                                padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600,
-                                                                                background: '#FFF3C4', color: '#B7791F'
-                                                                            }}>
-                                                                                {req.verification_stage}
-                                                                            </span>
-                                                                        </td>
-                                                                        <td style={{ padding: '20px' }}>
-                                                                            {canVerify && req.verification_stage === 'Coordinator Scrutiny' && (
-                                                                                <button onClick={() => handleMemberAction(req.request_id, 'verify')} style={{ padding: '6px 12px', background: 'var(--info)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Verify & Forward</button>
-                                                                            )}
-                                                                            {canVerify && req.verification_stage === 'Committee Approval' && (
-                                                                                <button onClick={() => handleMemberAction(req.request_id, 'approve')} style={{ padding: '6px 12px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Final Approve</button>
-                                                                            )}
-                                                                            {!canVerify && <span style={{ color: '#ccc', fontStyle: 'italic', fontSize: '0.8rem' }}>Pending {req.verification_stage}...</span>}
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            })}
-                                                        </tbody>
-                                                    </table>
-                                                )}
-                                            </div>
-                                        </div>
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {activeTab === 'assignments' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Assign Coordinators (Secretary Only)</h2>
-                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
-                                                {families.filter(f => f.verification_stage === 'Secretary Scrutiny').length} To Assign
-                                            </span>
-                                        </div>
-
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                            {families.filter(f => f.verification_stage === 'Secretary Scrutiny').length === 0 ?
-                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No applications pending Secretary review.</p> : (
-                                                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                                        <thead>
-                                                            <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                                <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Family Head</th>
-                                                                <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Address</th>
-                                                                <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Contact</th>
-                                                                <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Assign & Verify</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {families.filter(f => f.verification_stage === 'Secretary Scrutiny').map(fam => (
-                                                                <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
-                                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        {fam.current_address?.village_town_city}, {fam.current_address?.district}
-                                                                    </td>
-                                                                    <td style={{ padding: '20px' }}>{fam.head_details?.mobile}</td>
-                                                                    <td style={{ padding: '20px' }}>
-                                                                        <select
-                                                                            onChange={async (e) => {
-                                                                                const selected = coordinators.find(u => u.id === e.target.value);
-                                                                                if (selected) {
-                                                                                    if (window.confirm(`Assign ${selected.name} and verify stage?`)) {
-                                                                                        const remark = window.prompt("Enter assignment remarks (optional):", "") || "";
-                                                                                        await api.assignCoordinator(fam._id, selected.id, selected.name);
-                                                                                        await api.verifyFamilyStage(fam._id, { remarks: remark });
-                                                                                        alert("Coordinator Assigned and stage updated!");
-                                                                                        fetchData();
-                                                                                    }
-                                                                                }
-                                                                            }}
-                                                                            style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', maxWidth: '200px' }}
-                                                                            defaultValue=""
-                                                                        >
-                                                                            <option value="" disabled>Select Coordinator / Member</option>
-                                                                            {coordinators.map(c => <option key={c.id} value={c.id}>{c.name} ({getRoleLabel(c.role || c.position)})</option>)}
-                                                                        </select>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                )}
-                                        </div>
+                            {activeTab === 'assignments' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Assign Coordinators (Secretary Only)</h2>
+                                        <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>
+                                            {families.filter(f => f.verification_stage === 'Secretary Scrutiny').length} To Assign
+                                        </span>
                                     </div>
-                                )}
 
-                                {activeTab === 'requests' && (
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                                            <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Assistance Desk</h2>
-                                            <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{requests.length} Requests</span>
-                                        </div>
-
-                                        <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                            {requests.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No assistance tickets found.</p> : (
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {families.filter(f => f.verification_stage === 'Secretary Scrutiny').length === 0 ?
+                                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No applications pending Secretary review.</p> : (
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                                     <thead>
                                                         <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                            <th style={{ padding: '20px' }}>Ticket ID</th>
-                                                            <th style={{ padding: '20px' }}>Nature of Help</th>
-                                                            <th style={{ padding: '20px' }}>Grant Amount</th>
-                                                            <th style={{ padding: '20px' }}>Verification Status</th>
-                                                            <th style={{ padding: '20px' }}>Resolution</th>
+                                                            <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Family Head</th>
+                                                            <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Address</th>
+                                                            <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Contact</th>
+                                                            <th style={{ padding: '20px', position: 'sticky', top: '-30px', zIndex: 10, background: 'var(--bg-page)' }}>Assign & Verify</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {requests.map(req => (
-                                                            <tr key={req.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                                                <td style={{ padding: '20px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>#{req.id}</td>
+                                                        {families.filter(f => f.verification_stage === 'Secretary Scrutiny').map(fam => (
+                                                            <tr key={fam._id || fam.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                                                 <td style={{ padding: '20px' }}>
-                                                                    <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{req.request_type}</div>
+                                                                    <div style={{ fontWeight: 800, color: 'var(--primary-blue)' }}>{fam.head_details?.full_name || fam.head_name}</div>
+                                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fam.members?.length || 0} Members</div>
                                                                 </td>
                                                                 <td style={{ padding: '20px' }}>
-                                                                    <div style={{ fontWeight: 800, color: 'var(--danger)', fontSize: '1.1rem' }}>₹{req.amount_requested?.toLocaleString()}</div>
+                                                                    {fam.current_address?.village_town_city}, {fam.current_address?.district}
                                                                 </td>
+                                                                <td style={{ padding: '20px' }}>{fam.head_details?.mobile}</td>
                                                                 <td style={{ padding: '20px' }}>
-                                                                    <span style={{
-                                                                        padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
-                                                                        background: req.status === 'Approved' ? '#DEF7EC' : (req.status === 'Rejected' ? '#FDE2E2' : '#FEF3C7'),
-                                                                        color: req.status === 'Approved' ? '#03543F' : (req.status === 'Rejected' ? '#9B1C1C' : '#92400E')
-                                                                    }}>
-                                                                        {req.status}
-                                                                    </span>
-                                                                </td>
-                                                                <td style={{ padding: '20px' }}>
-                                                                    {req.status === 'Pending' && (
-                                                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                                                            <button onClick={() => handleUpdateRequest(req.id, 'Approved')} style={{ padding: '8px 14px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem' }}>Approve</button>
-                                                                            <button onClick={() => handleUpdateRequest(req.id, 'Rejected')} style={{ padding: '8px 14px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem' }}>Reject</button>
-                                                                        </div>
-                                                                    )}
+                                                                    <select
+                                                                        onChange={async (e) => {
+                                                                            const selected = coordinators.find(u => u.id === e.target.value);
+                                                                            if (selected) {
+                                                                                if (window.confirm(`Assign ${selected.name} and verify stage?`)) {
+                                                                                    const remark = window.prompt("Enter assignment remarks (optional):", "") || "";
+                                                                                    await api.assignCoordinator(fam._id, selected.id, selected.name);
+                                                                                    await api.verifyFamilyStage(fam._id, { remarks: remark });
+                                                                                    alert("Coordinator Assigned and stage updated!");
+                                                                                    fetchData();
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', maxWidth: '200px' }}
+                                                                        defaultValue=""
+                                                                    >
+                                                                        <option value="" disabled>Select Coordinator / Member</option>
+                                                                        {coordinators.map(c => <option key={c.id} value={c.id}>{c.name} ({getRoleLabel(c.role || c.position)})</option>)}
+                                                                    </select>
                                                                 </td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
                                                 </table>
                                             )}
-                                        </div>
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {activeTab === 'updates' && (
-                                    <div style={{ background: 'white', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #f1f5f9', paddingBottom: '15px' }}>
-                                            <h3 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 800 }}>Profile Update Requests</h3>
-                                            <div style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 14px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
-                                                {updateRequests.length} Pending
-                                            </div>
-                                        </div>
+                            {activeTab === 'requests' && (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                        <h2 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 900 }}>Assistance Desk</h2>
+                                        <span style={{ padding: '6px 14px', background: 'var(--sidebar-accent)', borderRadius: '10px', color: 'var(--primary-blue)', fontWeight: 700, fontSize: '0.9rem' }}>{requests.length} Requests</span>
+                                    </div>
 
-                                        {updateRequests.length === 0 ? (
-                                            <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
-                                                <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✅</div>
-                                                <p>All update requests have been processed.</p>
+                                    <div style={{ background: 'var(--bg-card)', padding: '0', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        {requests.length === 0 ? (
+                                            <div style={{ padding: '60px 20px', textAlign: 'center', background: 'white' }}>
+                                                <div style={{
+                                                    width: '80px', height: '80px', background: '#f8fafc', borderRadius: '50%',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    margin: '0 auto 20px', color: '#94a3b8'
+                                                }}>
+                                                    <ClipboardList size={40} />
+                                                </div>
+                                                <h3 style={{ fontSize: '1.25rem', color: '#1e293b', marginBottom: '8px', fontWeight: 800 }}>No assistance requests</h3>
+                                                <p style={{ color: '#64748b', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
+                                                    There are currently no pending or historical assistance tickets to display.
+                                                </p>
                                             </div>
                                         ) : (
-                                            <div style={{ display: 'grid', gap: '20px' }}>
-                                                {updateRequests.map((req, idx) => (
-                                                    <div key={idx} style={{ padding: '25px', borderRadius: '16px', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                                                            <div>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                                                                    <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, textTransform: 'uppercase' }}>
-                                                                        {req.assigned_to_role} Action Required
-                                                                    </span>
-                                                                    <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>• {new Date(req.created_at).toLocaleDateString()}</span>
-                                                                </div>
-                                                                <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#1e293b' }}>
-                                                                    Update Request from {req.requester_name}
-                                                                </h4>
-                                                                <p style={{ margin: '5px 0 0 0', color: '#64748b', fontSize: '0.9rem' }}>
-                                                                    Target: {req.target_member_id === 'HEAD' ? 'Family Head' : `Member ID: ${req.target_member_id}`} (Family: {req.family_unique_id})
-                                                                </p>
-                                                            </div>
-                                                            <div style={{ textAlign: 'right' }}>
-                                                                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '5px' }}>Stage</div>
-                                                                <div style={{ fontWeight: 600, color: 'var(--primary-blue)' }}>{req.current_stage}</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div style={{ background: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                                                            <div style={{ color: '#475569', fontWeight: 600, fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase' }}>Reason for Update:</div>
-                                                            <p style={{ margin: 0, color: '#1e293b', fontStyle: 'italic' }}>"{req.reason || 'No reason provided'}"</p>
-
-                                                            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px dashed #e2e8f0' }}>
-                                                                <div style={{ color: '#475569', fontWeight: 600, fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase' }}>Proposed Changes:</div>
-                                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-                                                                    {Object.entries(req.changes).map(([field, value]) => {
-                                                                        if (field === 'residence_address' && value) {
-                                                                            return Object.entries(value).map(([addrField, addrVal]) => (
-                                                                                addrVal ? (
-                                                                                    <div key={addrField} style={{ fontSize: '0.85rem', padding: '8px', background: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe' }}>
-                                                                                        <span style={{ color: '#1e40af' }}>{addrField}:</span> <span style={{ fontWeight: 600 }}>{String(addrVal)}</span>
-                                                                                    </div>
-                                                                                ) : null
-                                                                            ));
-                                                                        }
-                                                                        if (typeof value === 'object' && value !== null) return null;
-                                                                        if (['member_id', 'status', 'remarks', '_id', 'user_id', 'id'].includes(field)) return null;
-                                                                        return (
-                                                                            <div key={field} style={{ fontSize: '0.85rem', padding: '8px', background: '#f1f5f9', borderRadius: '6px' }}>
-                                                                                <span style={{ color: '#64748b' }}>{field.replace(/_/g, ' ')}:</span> <span style={{ fontWeight: 600 }}>{String(value)}</span>
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                                                            <button
-                                                                onClick={async () => {
-                                                                    const remark = prompt("Provide a reason for rejection (optional):");
-                                                                    if (remark === null) return;
-                                                                    try {
-                                                                        await api.processUpdateRequest(req._id, 'Reject', remark);
-                                                                        alert("Request Rejected");
-                                                                        fetchData();
-                                                                    } catch (err) { alert("Failed: " + err.message); }
-                                                                }}
-                                                                style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #ef4444', color: '#ef4444', background: 'white', fontWeight: 600, cursor: 'pointer' }}
-                                                            >
-                                                                Reject Request
-                                                            </button>
-                                                            <button
-                                                                onClick={async () => {
-                                                                    if (!window.confirm("Approve this update and apply changes to the family profile?")) return;
-                                                                    try {
-                                                                        await api.processUpdateRequest(req._id, 'Approve');
-                                                                        alert("Changes Applied Successfully!");
-                                                                        fetchData();
-                                                                    } catch (err) { alert("Failed: " + err.message); }
-                                                                }}
-                                                                style={{ padding: '10px 25px', borderRadius: '8px', border: 'none', background: '#10b981', color: 'white', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)' }}
-                                                            >
-                                                                Approve & Apply Changes
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                                <thead>
+                                                    <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                        <th style={{ padding: '20px' }}>Ticket ID</th>
+                                                        <th style={{ padding: '20px' }}>Nature of Help</th>
+                                                        <th style={{ padding: '20px' }}>Grant Amount</th>
+                                                        <th style={{ padding: '20px' }}>Verification Status</th>
+                                                        <th style={{ padding: '20px' }}>Resolution</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {requests.map(req => (
+                                                        <tr key={req.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                                            <td style={{ padding: '20px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>#{req.id}</td>
+                                                            <td style={{ padding: '20px' }}>
+                                                                <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{req.request_type}</div>
+                                                            </td>
+                                                            <td style={{ padding: '20px' }}>
+                                                                <div style={{ fontWeight: 800, color: 'var(--danger)', fontSize: '1.1rem' }}>₹{req.amount_requested?.toLocaleString()}</div>
+                                                            </td>
+                                                            <td style={{ padding: '20px' }}>
+                                                                <span style={{
+                                                                    padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
+                                                                    background: req.status === 'Approved' ? '#DEF7EC' : (req.status === 'Rejected' ? '#FDE2E2' : '#FEF3C7'),
+                                                                    color: req.status === 'Approved' ? '#03543F' : (req.status === 'Rejected' ? '#9B1C1C' : '#92400E')
+                                                                }}>
+                                                                    {req.status}
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: '20px' }}>
+                                                                {req.status === 'Pending' && (
+                                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                                        <button onClick={() => handleUpdateRequest(req.id, 'Approved')} style={{ padding: '8px 14px', background: 'var(--success)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem' }}>Approve</button>
+                                                                        <button onClick={() => handleUpdateRequest(req.id, 'Rejected')} style={{ padding: '8px 14px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem' }}>Reject</button>
+                                                                    </div>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         )}
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {activeTab === 'profile' && (
-                                    <CommonDashboardContent
-                                        activeTab={activeTab}
-                                        role={user?.role}
-                                        user={user}
-                                        refreshData={() => { }}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </div>
+                            {activeTab === 'updates' && (
+                                <div style={{ background: 'white', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #f1f5f9', paddingBottom: '15px' }}>
+                                        <h3 style={{ margin: 0, color: 'var(--primary-blue)', fontWeight: 800 }}>Profile Update Requests</h3>
+                                        <div style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 14px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}>
+                                            {updateRequests.length} Pending
+                                        </div>
+                                    </div>
+
+                                    {updateRequests.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
+                                            <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✅</div>
+                                            <p>All update requests have been processed.</p>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'grid', gap: '20px' }}>
+                                            {updateRequests.map((req, idx) => (
+                                                <div key={idx} style={{ padding: '25px', borderRadius: '16px', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                                                                <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, textTransform: 'uppercase' }}>
+                                                                    {req.assigned_to_role} Action Required
+                                                                </span>
+                                                                <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>• {new Date(req.created_at).toLocaleDateString()}</span>
+                                                            </div>
+                                                            <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#1e293b' }}>
+                                                                Update Request from {req.requester_name}
+                                                            </h4>
+                                                            <p style={{ margin: '5px 0 0 0', color: '#64748b', fontSize: '0.9rem' }}>
+                                                                Target: {req.target_member_id === 'HEAD' ? 'Family Head' : `Member ID: ${req.target_member_id}`} (Family: {req.family_unique_id})
+                                                            </p>
+                                                        </div>
+                                                        <div style={{ textAlign: 'right' }}>
+                                                            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '5px' }}>Stage</div>
+                                                            <div style={{ fontWeight: 600, color: 'var(--primary-blue)' }}>{req.current_stage}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ background: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                                                        <div style={{ color: '#475569', fontWeight: 600, fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase' }}>Reason for Update:</div>
+                                                        <p style={{ margin: 0, color: '#1e293b', fontStyle: 'italic' }}>"{req.reason || 'No reason provided'}"</p>
+
+                                                        <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px dashed #e2e8f0' }}>
+                                                            <div style={{ color: '#475569', fontWeight: 600, fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase' }}>Proposed Changes:</div>
+                                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
+                                                                {Object.entries(req.changes).map(([field, value]) => {
+                                                                    if (field === 'residence_address' && value) {
+                                                                        return Object.entries(value).map(([addrField, addrVal]) => (
+                                                                            addrVal ? (
+                                                                                <div key={addrField} style={{ fontSize: '0.85rem', padding: '8px', background: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe' }}>
+                                                                                    <span style={{ color: '#1e40af' }}>{addrField}:</span> <span style={{ fontWeight: 600 }}>{String(addrVal)}</span>
+                                                                                </div>
+                                                                            ) : null
+                                                                        ));
+                                                                    }
+                                                                    if (typeof value === 'object' && value !== null) return null;
+                                                                    if (['member_id', 'status', 'remarks', '_id', 'user_id', 'id'].includes(field)) return null;
+                                                                    return (
+                                                                        <div key={field} style={{ fontSize: '0.85rem', padding: '8px', background: '#f1f5f9', borderRadius: '6px' }}>
+                                                                            <span style={{ color: '#64748b' }}>{field.replace(/_/g, ' ')}:</span> <span style={{ fontWeight: 600 }}>{String(value)}</span>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                                                        <button
+                                                            onClick={async () => {
+                                                                const remark = prompt("Provide a reason for rejection (optional):");
+                                                                if (remark === null) return;
+                                                                try {
+                                                                    await api.processUpdateRequest(req._id, 'Reject', remark);
+                                                                    alert("Request Rejected");
+                                                                    fetchData();
+                                                                } catch (err) { alert("Failed: " + err.message); }
+                                                            }}
+                                                            style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #ef4444', color: '#ef4444', background: 'white', fontWeight: 600, cursor: 'pointer' }}
+                                                        >
+                                                            Reject Request
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (!window.confirm("Approve this update and apply changes to the family profile?")) return;
+                                                                try {
+                                                                    await api.processUpdateRequest(req._id, 'Approve');
+                                                                    alert("Changes Applied Successfully!");
+                                                                    fetchData();
+                                                                } catch (err) { alert("Failed: " + err.message); }
+                                                            }}
+                                                            style={{ padding: '10px 25px', borderRadius: '8px', border: 'none', background: '#10b981', color: 'white', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)' }}
+                                                        >
+                                                            Approve & Apply Changes
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'profile' && (
+                                <CommonDashboardContent
+                                    activeTab={activeTab}
+                                    role={user?.role}
+                                    user={user}
+                                    refreshData={() => { }}
+                                />
+                            )}
+                        </>
+                    )}
                 </div>
             </DashboardLayout >
             {selectedMember && (

@@ -18,12 +18,14 @@ export const api = {
     updateProfile: (data) => axios.post(`${API_URL}/auth/update-profile`, data, { headers: getAuthHeaders() }),
     updateProfilePhoto: (url) => axios.post(`${API_URL}/auth/update-photo`, { photo_url: url }, { headers: getAuthHeaders() }),
     verifyPassword: (password) => axios.post(`${API_URL}/auth/verify-password`, { password }, { headers: getAuthHeaders() }),
+    lookupCommunity: (identifier) => axios.get(`${API_URL}/auth/community-lookup/${identifier}`),
 
     // Families (for Admin)
     getFamilies: () => axios.get(`${API_URL}/families`, { headers: getAuthHeaders() }),
     approveFamily: (id) => axios.post(`${API_URL}/families/${id}/approve`, {}, { headers: getAuthHeaders() }),
     getMyFamily: () => axios.get(`${API_URL}/families/me`, { headers: getAuthHeaders() }),
     completeProfile: (data) => axios.post(`${API_URL}/families/complete-profile`, data, { headers: getAuthHeaders() }),
+    saveProgress: (data) => axios.post(`${API_URL}/families/save-progress`, data, { headers: getAuthHeaders() }),
     recommendFamily: (data) => axios.post(`${API_URL}/families/recommend`, data, { headers: getAuthHeaders() }),
     getMyRecommendations: () => axios.get(`${API_URL}/families/recommendations/my`, { headers: getAuthHeaders() }),
     verifyToken: (token) => axios.post(`${API_URL}/families/verify-token/${token}`),
@@ -74,7 +76,10 @@ export const api = {
     getInquiries: () => axios.get(`${API_URL}/inquiries`, { headers: getAuthHeaders() }),
 
     // Role Management (President Only)
-    getUsers: () => axios.get(`${API_URL}/management/users`, { headers: getAuthHeaders() }),
+    getUsers: (communityId = null) => {
+        const params = communityId && communityId !== 'all' ? { community_id: communityId } : {};
+        return axios.get(`${API_URL}/management/users`, { headers: getAuthHeaders(), params });
+    },
     updateUserRole: (id, role) => axios.put(`${API_URL}/management/users/${id}/role`, { new_role: role }, { headers: getAuthHeaders() }),
     updateUserPosition: (id, pos) => axios.put(`${API_URL}/management/users/${id}/position`, { new_position: pos }, { headers: getAuthHeaders() }),
     updateUserStatus: (id, is_active) => axios.put(`${API_URL}/management/users/${id}/status`, { is_active }, { headers: getAuthHeaders() }),
@@ -103,7 +108,13 @@ export const api = {
     createCampaign: (data) => axios.post(`${API_URL}/finance/campaigns`, data, { headers: getAuthHeaders() }),
     getCampaigns: () => axios.get(`${API_URL}/finance/campaigns`, { headers: getAuthHeaders() }),
     submitCampaignProof: (campaignId, data) => axios.post(`${API_URL}/finance/campaigns/${campaignId}/proof`, data, { headers: getAuthHeaders() }),
-    getCampaignReceipts: (campaignId) => axios.get(`${API_URL}/finance/campaigns/${campaignId}/receipts`, { headers: getAuthHeaders() })
+    getCampaignReceipts: (campaignId) => axios.get(`${API_URL}/finance/campaigns/${campaignId}/receipts`, { headers: getAuthHeaders() }),
+
+    // Communities
+    registerCommunity: (data) => axios.post(`${API_URL}/communities/register`, data),
+    getCommunities: () => axios.get(`${API_URL}/communities`),
+    searchCommunityByCode: (code) => axios.get(`${API_URL}/communities/search`, { params: { code } }),
+    getCommunityByCode: (code) => axios.get(`${API_URL}/communities/code/${code}`)
 };
 
 

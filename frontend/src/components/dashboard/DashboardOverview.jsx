@@ -13,13 +13,13 @@ const SmartStatCard = ({ icon: Icon, label, value, subLabel, colorClass, bgClass
         style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '24px',
+            padding: '20px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             height: '100%',
-            minHeight: '160px',
+            minHeight: '140px',
             border: '1px solid rgba(0,0,0,0.04)',
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
             cursor: onClick ? 'pointer' : 'default'
@@ -51,7 +51,7 @@ const SmartActionCard = ({ icon: Icon, title, description, btnText, btnColor, on
     <div className="smart-action-card" style={{
         background: 'white',
         borderRadius: '16px',
-        padding: '24px',
+        padding: '20px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
         display: 'flex',
         flexDirection: 'column',
@@ -111,8 +111,16 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
         finance: initialData?.finance || null,
         requests: initialData?.requests || [],
         notices: initialData?.notices || [],
-        beneficiaries: initialData?.beneficiaries || []
+        beneficiaries: initialData?.beneficiaries || [],
+        communityInfo: null
     });
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 900);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Determine effective role for UI purposes
     // If we are strictly in "Family Head" mode (passed via prop), ignore the official position
@@ -145,12 +153,13 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
                 let fetchedData = {};
 
                 if (isCommittee) {
-                    const [fam, req, fin, not, memReq] = await Promise.all([
+                    const [fam, req, fin, not, memReq, comm] = await Promise.all([
                         api.getFamilies().catch(() => ({ data: [] })),
                         api.getAssistanceRequests().catch(() => ({ data: [] })),
                         api.getFinanceStats().catch(() => ({ data: {} })),
                         api.getNotices().catch(() => ({ data: [] })),
-                        api.getMemberRequests().catch(() => ({ data: [] }))
+                        api.getMemberRequests().catch(() => ({ data: [] })),
+                        currentUser?.community_id ? api.getCommunity(currentUser.community_id).catch(() => ({ data: null })) : Promise.resolve({ data: null })
                     ]);
                     fetchedData = {
                         totalMembers: fam.data.reduce((acc, f) => acc + (f.members?.length || 0), 0),
@@ -163,14 +172,23 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
                         pendingExpenses: fin.data?.pending_expenses_count || 0,
                         activeCollections: fin.data?.active_collections_breakdown || []
                     };
+                    setData({
+                        loading: false,
+                        stats: fetchedData,
+                        notices: not.data || [],
+                        family: null,
+                        beneficiaries: [],
+                        communityInfo: comm.data
+                    });
                 } else if (isFamily) {
-                    const [fam, not, myFin, req, pubFin, bens] = await Promise.all([
+                    const [fam, not, myFin, req, pubFin, bens, comm] = await Promise.all([
                         api.getMyFamily().catch(() => ({ data: { members: [] } })),
                         api.getNotices().catch(() => ({ data: [] })),
                         api.getMyFinanceStats().catch(() => ({ data: { total_contributed: 0 } })),
                         api.getAssistanceRequests().catch(() => ({ data: [] })),
                         api.getFinanceStats().catch(() => ({ data: { total_collected: 0, families_helped: 0 } })),
-                        api.getPublicBeneficiaries().catch(() => ({ data: [] }))
+                        api.getPublicBeneficiaries().catch(() => ({ data: [] })),
+                        currentUser?.community_id ? api.getCommunity(currentUser.community_id).catch(() => ({ data: null })) : Promise.resolve({ data: null })
                     ]);
                     fetchedData = {
                         familyMembers: fam.data?.members?.length || 0,
@@ -187,7 +205,8 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
                         stats: fetchedData,
                         notices: not.data || [],
                         family: fam.data,
-                        beneficiaries: bens.data || []
+                        beneficiaries: bens.data || [],
+                        communityInfo: comm.data
                     });
                     return;
                 }
@@ -214,8 +233,8 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
             stats: [
                 { label: t.dashboard?.family_head?.stats?.members || 'Registered Family Members', value: data.stats.familyMembers || 0, icon: Users, color: '#3b82f6', bg: '#eff6ff', sub: t.dashboard?.family_head?.stats?.sub?.members },
                 { label: t.dashboard?.family_head?.stats?.requests || 'Active Help Requests', value: data.stats.activeRequests || 0, icon: AlertCircle, color: '#dc2626', bg: '#fef2f2', sub: t.dashboard?.family_head?.stats?.sub?.track },
-                { label: t.dashboard?.family_head?.stats?.contributions || 'Contributions Given', value: `₹${(data.stats.contributionPaid || 0).toLocaleString()}`, icon: DollarSign, color: '#ec4899', bg: '#fce7f3', sub: t.dashboard?.family_head?.stats?.sub?.voluntary },
-                { label: t.dashboard?.family_head?.stats?.notices || 'Notices from Samiti', value: data.stats.noticesCount || 0, icon: Megaphone, color: '#f59e0b', bg: '#fffbeb', sub: t.dashboard?.family_head?.stats?.sub?.inform }
+                { label: t.dashboard?.family_head?.stats?.contributions || 'Contributions Given', value: `₹${(data.stats.contributionPaid || 0).toLocaleString()}`, icon: DollarSign, color: '#ec4899', bg: '#fce773', sub: t.dashboard?.family_head?.stats?.sub?.voluntary },
+                { label: t.dashboard?.family_head?.stats?.notices || 'Notices from Samiti', value: data.stats.noticesCount || 0, icon: Megaphone, color: '#f55e0b', bg: '#fffbeb', sub: t.dashboard?.family_head?.stats?.sub?.inform }
             ],
             actions: [
                 { title: t.dashboard?.family_head?.actions?.register, desc: t.dashboard?.family_head?.actions?.register_desc, btnText: t.dashboard?.family_head?.actions?.register_btn, icon: Plus, color: '#3b82f6', action: () => nav('family') },
@@ -224,14 +243,34 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
                 { title: t.dashboard?.family_head?.actions?.women, desc: t.dashboard?.family_head?.actions?.women_desc, btnText: t.dashboard?.family_head?.actions?.women_btn, icon: Users, color: '#d97706', action: () => nav('help', '&type=Support') }
             ],
             extraSection: (
-                <div style={{ marginTop: '30px', padding: '20px', background: '#fff7ed', borderLeft: '4px solid #f97316', borderRadius: '8px' }}>
-                    <h4 style={{ margin: '0 0 10px 0', color: '#9a3412', fontSize: '1.1rem' }}>{t.dashboard?.family_head?.disclaimer_title} / महत्वपूर्ण सूचना</h4>
-                    <p style={{ margin: 0, color: '#9a3412', fontStyle: 'italic', fontWeight: 600 }}>
-                        {t.dashboard?.family_head?.disclaimer_text}
-                    </p>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '0.9rem', color: '#c2410c' }}>
-                        {t.dashboard?.family_head?.disclaimer_sub}
-                    </p>
+                <div style={{ marginTop: '32px' }}>
+                    <div className="premium-card animate-fade" style={{ background: 'linear-gradient(135deg, #fffcf0 0%, #fff 100%)', borderLeft: '5px solid var(--primary)', padding: '28px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                            <div style={{ fontSize: '2rem' }}>🎯</div>
+                            <h3 style={{ margin: 0, color: 'var(--secondary)', fontSize: '1.25rem', fontWeight: 900 }}>Community Vision & Objectives</h3>
+                        </div>
+                        <div style={{ color: 'var(--secondary)', opacity: 0.9, lineHeight: 1.7, fontSize: '0.95rem' }}>
+                            {data.communityInfo?.objectives ? (
+                                <ul style={{ paddingLeft: '20px', margin: 0 }}>
+                                    {data.communityInfo.objectives.map((obj, i) => (
+                                        <li key={i} style={{ marginBottom: '8px', fontWeight: 600 }}>{obj}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p style={{ margin: 0, fontStyle: 'italic', fontWeight: 600 }}>
+                                    {t.dashboard?.family_head?.disclaimer_text || "Building a stronger, united community through Seva and Sahyog."}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '20px', padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div>
+                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                             Society Code: <span style={{ color: 'var(--primary)', fontWeight: 900 }}>{data.communityInfo?.society_code || '---'}</span> • 
+                             Address: <span style={{ color: 'var(--secondary)', fontWeight: 800 }}>{data.communityInfo?.address || 'Satghara, Bihar'}</span>
+                         </p>
+                    </div>
                 </div>
             )
         },
@@ -320,33 +359,34 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
     if (data.loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading Dashboard Intelligence...</div>;
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', animation: 'fadeIn 0.5s ease' }}>
+        <div style={{ width: '100%', animation: 'fadeIn 0.5s ease' }}>
             {/* Stats Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px', marginBottom: '30px' }}>
                 {currentConfig.stats.map((stat, i) => (
-                    <SmartStatCard
-                        key={i}
-                        icon={stat.icon}
-                        label={stat.label}
-                        value={stat.value}
-                        subLabel={stat.sub}
-                        colorClass={stat.color}
-                        bgClass={stat.bg}
-                        onClick={stat.action}
-                    />
+                    <div key={i} style={{ gridColumn: isMobile ? 'span 12' : 'span 3' }}>
+                        <SmartStatCard
+                            icon={stat.icon}
+                            label={stat.label}
+                            value={stat.value}
+                            subLabel={stat.sub}
+                            colorClass={stat.color}
+                            bgClass={stat.bg}
+                            onClick={stat.action}
+                        />
+                    </div>
                 ))}
             </div>
 
             {/* Active Collections / Fund Raising Status */}
             {(data.stats.activeCollections?.length > 0) && (
-                <div style={{ marginBottom: '40px' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ marginBottom: '30px' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Outfit', sans-serif" }}>
                         <span style={{ width: '4px', height: '24px', background: '#d97706', borderRadius: '4px' }}></span>
                         Current Fund Raising & Collections (This Month)
                     </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '15px' }}>
                         {data.stats.activeCollections.map((col, idx) => (
-                            <div key={idx} style={{ background: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div key={idx} style={{ gridColumn: isMobile ? 'span 12' : 'span 4', background: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <div style={{ width: '40px', height: '40px', background: '#fffbeb', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
                                     <TrendingUp size={20} />
                                 </div>
@@ -362,21 +402,22 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
 
             {/* Active Cards / Action Center */}
             <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Outfit', sans-serif" }}>
                     <span style={{ width: '4px', height: '24px', background: '#3b82f6', borderRadius: '4px' }}></span>
                     Action Center
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px', marginBottom: '30px' }}>
                     {currentConfig.actions.map((action, i) => (
-                        <SmartActionCard
-                            key={i}
-                            icon={action.icon}
-                            title={action.title}
-                            description={action.desc}
-                            btnText={action.btnText}
-                            btnColor={action.color}
-                            onClick={action.action}
-                        />
+                        <div key={i} style={{ gridColumn: isMobile ? 'span 12' : 'span 4' }}>
+                            <SmartActionCard
+                                icon={action.icon}
+                                title={action.title}
+                                description={action.desc}
+                                btnText={action.btnText}
+                                btnColor={action.color}
+                                onClick={action.action}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>
@@ -387,7 +428,7 @@ const DashboardOverview = ({ role, user: currentUser, initialData = null }) => {
             {/* Public Beneficiary List - Show for everyone to see impact */}
             {data.beneficiaries?.length > 0 && (
                 <div style={{ marginTop: '40px' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Outfit', sans-serif" }}>
                         <span style={{ width: '4px', height: '24px', background: '#10b981', borderRadius: '4px' }}></span>
                         Community Impact - Recent Help Provided
                     </h3>

@@ -42,6 +42,8 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
     const [inquiries, setInquiries] = useState([]);
     const [users, setUsers] = useState([]);
     const [roleLogs, setRoleLogs] = useState([]);
+    const [committeeCommunityFilter, setCommitteeCommunityFilter] = useState('all');
+    const [communitiesList, setCommunitiesList] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
     const [pendingRoleChange, setPendingRoleChange] = useState(null);
@@ -94,12 +96,20 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
     const [approvedAssistance, setApprovedAssistance] = useState([]);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [campaignForm, setCampaignForm] = useState({
-        assistance_request_id: '', title: '', description: '', target_amount: '', upi_id: 'samiti@upi', account_holder: 'Maa Jagdamba Samiti'
+        assistance_request_id: '', title: '', description: '', target_amount: '', upi_id: 'samiti@upi', account_holder: 'Sanatan Swabhiman Samiti'
     });
     const [isProofModalOpen, setIsProofModalOpen] = useState(false);
     const [selectedCampaign, setSelectedCampaign] = useState(null);
     const [proofForm, setProofForm] = useState({ amount: '', screenshot_url: '', transaction_id: '', remarks: '' });
     const [isUploadingProof, setIsUploadingProof] = useState(false);
+    
+    // Administrative Permissions
+    const canEditFinance = ['super_admin', 'president', 'treasurer', 'admin'].includes(role);
+    const canAddExpense = ['super_admin', 'treasurer', 'president', 'secretary'].includes(role) || user?.position === 'treasurer';
+    const canApproveExpense = ['super_admin', 'president'].includes(role);
+    const canPostNotice = ['super_admin', 'secretary', 'president', 'coordinator'].includes(role);
+    const canManageRules = ['super_admin', 'secretary', 'president', 'admin'].includes(role);
+    const canApproveMember = ['super_admin', 'secretary', 'president', 'admin'].includes(role);
 
     // Notification System
     const [notification, setNotification] = useState(null); // { type: 'success'|'error', message: '' }
@@ -195,20 +205,22 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
 
     // Fetch Role Management Data
     useEffect(() => {
-        if (activeTab === 'roles') {
+        if (activeTab === 'roles' || activeTab === 'committee-members') {
             setLoading(true);
             Promise.all([
-                api.getUsers(),
-                api.getRoleLogs()
+                api.getUsers(committeeCommunityFilter),
+                api.getRoleLogs(),
+                api.getCommunities().catch(() => ({ data: [] }))
             ])
-                .then(([userRes, logRes]) => {
+                .then(([userRes, logRes, commRes]) => {
                     setUsers(userRes.data);
                     setRoleLogs(logRes.data);
+                    setCommunitiesList(commRes.data);
                 })
                 .catch(err => console.error(err))
                 .finally(() => setLoading(false));
         }
-    }, [activeTab]);
+    }, [activeTab, committeeCommunityFilter]);
 
     // Fetch Elections
     useEffect(() => {
@@ -257,11 +269,6 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
 
 
 
-    const canEditFinance = ['super_admin', 'treasurer', 'president'].includes(role);
-    const canAddExpense = ['super_admin', 'treasurer', 'secretary'].includes(role);
-    const canApproveExpense = ['super_admin', 'president'].includes(role);
-    const canPostNotice = ['super_admin', 'secretary', 'president', 'coordinator'].includes(role);
-    const canManageRules = ['super_admin', 'secretary', 'president', 'admin'].includes(role);
 
     const handlePasswordVerify = async (e) => {
         e.preventDefault();
@@ -389,70 +396,107 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
     };
 
     const renderFunds = () => (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ borderBottom: '2px solid #FF9933', paddingBottom: '10px', margin: 0 }}>🌎 Maa Jagdamba Global Overview</h3>
-                {canEditFinance && <button style={{ padding: '8px 15px', background: '#2C3E50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>⚙️ Manage Funds</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Page Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <h3 style={{ margin: 0, color: 'var(--secondary)', fontSize: '1.75rem', fontWeight: 950, letterSpacing: '-0.02em' }}>Financial Ecosystem</h3>
+                    <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>Real-time transparency and community impact tracking.</p>
+                </div>
+                {canEditFinance && (
+                    <button className="premium-btn shadow-premium" style={{ borderRadius: '12px', padding: '12px 24px' }}>
+                        <Settings size={18} /> Manage Funds
+                    </button>
+                )}
             </div>
 
-            {loading && !financeStats ? <p>Loading financial data...</p> : (
+            {loading && !financeStats ? (
+                <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <div style={{ width: '40px', height: '40px', border: '3px solid #eee', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 16px', animation: 'spin 1s linear infinite' }}></div>
+                    Syncing Treasury Data...
+                </div>
+            ) : (
                 <>
                     {/* Primary Engagement Stats */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #FF9933 0%, #D87C1D 100%)', borderRadius: '12px', color: 'white', boxShadow: '0 4px 15px rgba(216,124,29,0.3)' }}>
-                            <small style={{ opacity: 0.9, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Total Families</small>
-                            <div style={{ fontSize: '2rem', fontWeight: 900, marginTop: '5px' }}>{financeStats?.total_families || 0}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                        <div className="premium-card animate-slide-up" style={{ padding: '32px', background: 'white', borderLeft: '6px solid #3b82f6' }}>
+                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                 <div style={{ width: '48px', height: '48px', background: '#eff6ff', color: '#3b82f6', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                     <Users size={24} />
+                                 </div>
+                                 <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>Verified Units</span>
+                             </div>
+                             <div style={{ fontSize: '2.5rem', fontWeight: 950, color: 'var(--secondary)', letterSpacing: '-0.03em' }}>{financeStats?.total_families || 0}</div>
+                             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 700, marginTop: '4px' }}>Registered Families</div>
                         </div>
-                        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%)', borderRadius: '12px', color: 'white', boxShadow: '0 4px 15px rgba(196,113,237,0.3)' }}>
-                            <small style={{ opacity: 0.9, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Total Members</small>
-                            <div style={{ fontSize: '2rem', fontWeight: 900, marginTop: '5px' }}>{financeStats?.total_members || 0}</div>
+
+                        <div className="premium-card animate-slide-up" style={{ padding: '32px', background: 'white', borderLeft: '6px solid var(--primary)', animationDelay: '0.1s' }}>
+                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                 <div style={{ width: '48px', height: '48px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                     <Activity size={24} />
+                                 </div>
+                                 <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--primary)', background: 'var(--primary-light)', padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>Active Soul</span>
+                             </div>
+                             <div style={{ fontSize: '2.5rem', fontWeight: 950, color: 'var(--secondary)', letterSpacing: '-0.03em' }}>{financeStats?.total_members || 0}</div>
+                             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 700, marginTop: '4px' }}>Community Members</div>
                         </div>
                     </div>
 
-                    {/* Financial Stats Cards */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                        <div style={{ padding: '20px', background: '#f0fff4', borderRadius: '12px', border: '1px solid #c6f6d5' }}>
-                            <small style={{ color: '#2f855a', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.7rem' }}>Funds Collected</small>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#22543d', marginTop: '10px' }}>₹ {financeStats?.total_collected?.toLocaleString() ?? 0}</div>
+                    {/* Financial Stats Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+                        <div className="premium-card" style={{ padding: '24px', background: 'linear-gradient(135deg, white 0%, #f0fff4 100%)', border: '1px solid #c6f6d5' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#c6f6d5', color: '#2f855a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DollarSign size={18} /></div>
+                                <span style={{ color: '#2f855a', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Total Funds Seeded</span>
+                            </div>
+                            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1a4731' }}>₹{financeStats?.total_collected?.toLocaleString() ?? 0}</div>
                         </div>
-                        <div style={{ padding: '20px', background: '#ebf8ff', borderRadius: '12px', border: '1px solid #bee3f8' }}>
-                            <small style={{ color: '#2b6cb0', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.7rem' }}>Distributed Yet</small>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#2a4365', marginTop: '10px' }}>₹ {financeStats?.total_assistance_given?.toLocaleString() ?? 0}</div>
+
+                        <div className="premium-card" style={{ padding: '24px', background: 'linear-gradient(135deg, white 0%, #ebf8ff 100%)', border: '1px solid #bee3f8' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#bee3f8', color: '#2b6cb0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ShieldCheck size={18} /></div>
+                                <span style={{ color: '#2b6cb0', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Selfless Distribution</span>
+                            </div>
+                            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#2a4365' }}>₹{financeStats?.total_assistance_given?.toLocaleString() ?? 0}</div>
                         </div>
-                        <div style={{ padding: '20px', background: '#fffaf0', borderRadius: '12px', border: '1px solid #feebc8' }}>
-                            <small style={{ color: '#c05621', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.7rem' }}>Families Assisted</small>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#7b341e', marginTop: '10px' }}>{financeStats?.families_helped ?? 0}</div>
+
+                        <div className="premium-card" style={{ padding: '24px', background: 'linear-gradient(135deg, white 0%, #fffaf0 100%)', border: '1px solid #feebc8' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#feebc8', color: '#c05621', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Users size={18} /></div>
+                                <span style={{ color: '#c05621', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Families Empowered</span>
+                            </div>
+                            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#7b341e' }}>{financeStats?.families_helped ?? 0}</div>
                         </div>
                     </div>
 
                     {/* Beneficiaries Table */}
-                    <div style={{ marginTop: '40px', background: '#f8fafc', padding: '25px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#1e293b' }}>🤝 Recent Beneficiaries</h4>
-                            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Public Transparency Record</span>
+                    <div className="premium-card" style={{ padding: '32px', background: 'white', overflow: 'hidden' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h4 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--secondary)', fontWeight: 900 }}>Seva Impact Record</h4>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 800, background: 'var(--bg-page)', padding: '6px 12px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Public Transparency Log</span>
                         </div>
-                        <div style={{ overflowX: 'auto' }}>
+                        <div style={{ overflowX: 'auto', margin: '0 -32px' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead>
-                                    <tr style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                        <th style={{ padding: '15px' }}>Name</th>
-                                        <th style={{ padding: '15px' }}>Nature of Help</th>
-                                        <th style={{ padding: '15px' }}>Amount Provided</th>
-                                        <th style={{ padding: '15px' }}>Date</th>
+                                    <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        <th style={{ padding: '16px 32px' }}>Beneficiary Unit</th>
+                                        <th style={{ padding: '16px 32px' }}>Assistance vertical</th>
+                                        <th style={{ padding: '16px 32px' }}>Empowerment Amount</th>
+                                        <th style={{ padding: '16px 32px' }}>Execution Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {beneficiaries.length === 0 ? (
-                                        <tr><td colSpan="4" style={{ padding: '30px', textAlign: 'center', color: '#94a3b8' }}>No disbursement records found.</td></tr>
+                                        <tr><td colSpan="4" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 600 }}>No selfless service records found.</td></tr>
                                     ) : (
                                         beneficiaries.map((b, i) => (
-                                            <tr key={i} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '0.9rem' }}>
-                                                <td style={{ padding: '15px', fontWeight: 700, color: '#1e293b' }}>{b.name}</td>
-                                                <td style={{ padding: '15px' }}>
-                                                    <span style={{ padding: '4px 10px', background: '#eff6ff', color: '#1d4ed8', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>{b.type}</span>
+                                            <tr key={i} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.95rem', transition: 'background 0.2s' }}>
+                                                <td style={{ padding: '20px 32px', fontWeight: 900, color: 'var(--secondary)' }}>{b.name}</td>
+                                                <td style={{ padding: '20px 32px' }}>
+                                                    <span style={{ padding: '6px 14px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase' }}>{b.type}</span>
                                                 </td>
-                                                <td style={{ padding: '15px', fontWeight: 800, color: '#dc2626' }}>₹ {b.amount?.toLocaleString()}</td>
-                                                <td style={{ padding: '15px', color: '#64748b' }}>{new Date(b.date).toLocaleDateString()}</td>
+                                                <td style={{ padding: '20px 32px', fontWeight: 950, color: 'var(--danger)', fontSize: '1.1rem' }}>₹{b.amount?.toLocaleString()}</td>
+                                                <td style={{ padding: '20px 32px', color: 'var(--text-muted)', fontWeight: 600 }}>{new Date(b.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                                             </tr>
                                         ))
                                     )}
@@ -462,38 +506,43 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
                     </div>
 
                     {/* Chart Section */}
-                    <div style={{ marginTop: '40px' }}>
-                        <h4 style={{ color: '#475569', marginBottom: '20px' }}>📈 Monthly Contribution Growth</h4>
-                        <div style={{ height: '200px', display: 'flex', alignItems: 'flex-end', gap: '20px', padding: '20px 0', borderBottom: '2px solid #e2e8f0' }}>
+                    <div className="premium-card" style={{ padding: '32px', background: 'white' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                             <BarChart3 size={24} color="var(--primary)" />
+                             <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--secondary)', fontWeight: 900 }}>Resource Growth Index</h4>
+                        </div>
+                        <div style={{ height: '240px', display: 'flex', alignItems: 'flex-end', gap: '32px', padding: '20px 0', borderBottom: '2.5px solid var(--border-color)', margin: '0 20px' }}>
                             {financeStats?.monthly_data?.map((item, idx) => {
                                 const maxVal = Math.max(...financeStats.monthly_data.map(d => d.collected)) || 1;
-                                const height = (item.collected / maxVal) * 150;
+                                const height = (item.collected / maxVal) * 180;
                                 return (
-                                    <div key={idx} style={{ textAlign: 'center', flex: 1 }}>
+                                    <div key={idx} style={{ textAlign: 'center', flex: 1, position: 'relative' }}>
                                         <div
+                                            className="animate-slide-up"
                                             style={{
                                                 height: `${height}px`,
-                                                background: 'linear-gradient(to top, #388E3C, #81C784)',
-                                                borderRadius: '6px 6px 0 0',
+                                                background: 'linear-gradient(to top, var(--primary) 0%, var(--primary-dark) 100%)',
+                                                borderRadius: '10px 10px 0 0',
                                                 margin: '0 auto',
-                                                width: '60%',
-                                                minWidth: '24px',
-                                                maxWidth: '45px',
-                                                transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                                width: '100%',
+                                                maxWidth: '56px',
+                                                boxShadow: '0 8px 24px var(--primary-glow)',
+                                                animationDelay: `${idx * 0.05}s`
                                             }}
                                             title={`₹${item.collected}`}
                                         ></div>
-                                        <div style={{ marginTop: '12px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>{item.month}</div>
+                                        <div style={{ position: 'absolute', bottom: '-40px', left: 0, right: 0, fontSize: '0.8rem', color: 'var(--secondary)', fontWeight: 900, textTransform: 'uppercase' }}>{item.month}</div>
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
 
-                    <div style={{ marginTop: '30px', padding: '15px', background: '#eff6ff', borderRadius: '10px', display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '1.5rem' }}>ℹ️</span>
-                        <p style={{ margin: 0, color: '#1e40af', fontSize: '0.85rem', lineHeight: 1.5 }}>
-                            All financial data and beneficiary records are audited by the committee and made transparently available to every registered family head of <strong>Maa Jagdamba Samiti</strong>.
+                    <div style={{ marginTop: '40px', padding: '24px', background: 'var(--bg-hover)', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'center', border: '1px solid var(--border-color)' }}>
+                        <div style={{ fontSize: '2.5rem' }}>💠</div>
+                        <p style={{ margin: 0, color: 'var(--secondary)', fontSize: '0.9rem', lineHeight: 1.6, fontWeight: 700 }}>
+                            All financial data and beneficiary records are audited by the committee and made transparently available to every registered family head of <strong>{user?.community_name || 'Sanatan Swabhiman Samiti'}</strong>. 
+                            We believe in absolute transparency as the foundation of Seva.
                         </p>
                     </div>
                 </>
@@ -502,82 +551,92 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
     );
 
     const renderContributions = () => (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ borderBottom: '2px solid #FF9933', paddingBottom: '10px', margin: 0 }}>📜 Contribution History</h3>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button onClick={handleDownloadCSV} style={{ padding: '8px 15px', background: '#1976D2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>⬇️ Export CSV</button>
-                    {canEditFinance && <button style={{ padding: '8px 15px', background: '#388E3C', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>+ Add New</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ margin: 0, color: 'var(--secondary)', fontSize: '1.5rem', fontWeight: 900 }}>Contribution Audit</h3>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button onClick={handleDownloadCSV} className="premium-btn shadow-premium" style={{ padding: '10px 20px', background: 'var(--secondary)' }}>
+                        <Lock size={16} /> Export CSV
+                    </button>
+                    {canEditFinance && (
+                        <button className="premium-btn shadow-premium" style={{ padding: '10px 20px' }}>
+                            + New Entry
+                        </button>
+                    )}
                 </div>
             </div>
 
-            {/* Filters */}
-            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '8px' }}>
+            <div className="premium-card shadow-premium" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', padding: '20px', background: 'white' }}>
                 <select
-                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    className="premium-input-field"
+                    style={{ flex: 1, minWidth: '180px', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)' }}
                     value={filters.payment_type}
                     onChange={e => setFilters({ ...filters, payment_type: e.target.value })}
                 >
-                    <option value="">All Payment Types</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Donation">Donation</option>
-                    <option value="Event">Event Fee</option>
+                    <option value="">All Streams</option>
+                    <option value="Monthly">Monthly Seva</option>
+                    <option value="Donation">One-time Donation</option>
+                    <option value="Event">Event Support</option>
                 </select>
 
                 <input
                     type="date"
-                    placeholder="Start Date"
-                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    className="premium-input-field"
+                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)' }}
                     value={filters.start_date}
                     onChange={e => setFilters({ ...filters, start_date: e.target.value })}
                 />
 
                 <input
                     type="date"
-                    placeholder="End Date"
-                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    className="premium-input-field"
+                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)' }}
                     value={filters.end_date}
                     onChange={e => setFilters({ ...filters, end_date: e.target.value })}
                 />
 
                 <button
                     onClick={() => setFilters({ payment_type: '', start_date: '', end_date: '' })}
-                    style={{ padding: '8px 15px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ padding: '0 24px', background: 'var(--bg-hover)', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 800, color: 'var(--secondary)' }}
                 >
-                    Clear Filters
+                    Reset
                 </button>
             </div>
 
-            {loading && contributions.length === 0 ? <p>Loading history...</p> : (
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-                        <thead>
-                            <tr style={{ background: '#f5f5f5', textAlign: 'left', borderBottom: '2px solid #ddd' }}>
-                                <th style={{ padding: '12px' }}>Date</th>
-                                <th style={{ padding: '12px' }}>Family / Member</th>
-                                <th style={{ padding: '12px' }}>Type</th>
-                                <th style={{ padding: '12px' }}>Amount</th>
-                                <th style={{ padding: '12px' }}>Receipt ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {contributions.length === 0 ? (
-                                <tr><td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#888' }}>No records found.</td></tr>
-                            ) : (
-                                contributions.map(c => (
-                                    <tr key={c.id}>
-                                        <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{c.date}</td>
-                                        <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{c.family_name}</td>
-                                        <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                                            <span style={{ padding: '4px 8px', borderRadius: '4px', background: '#e3f2fd', color: '#1565c0', fontSize: '0.85rem' }}>{c.type}</span>
-                                        </td>
-                                        <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: 'bold', color: '#2e7d32' }}>₹{c.amount}</td>
-                                        <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>#{c.id}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+            {loading && contributions.length === 0 ? (
+                <div className="premium-card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>Synching history...</div>
+            ) : (
+                <div className="premium-card shadow-premium" style={{ background: 'white', overflow: 'hidden' }}>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ background: 'var(--bg-page)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                    <th style={{ padding: '16px 24px' }}>Timeline</th>
+                                    <th style={{ padding: '16px 24px' }}>Entity Source</th>
+                                    <th style={{ padding: '16px 24px' }}>Vertical</th>
+                                    <th style={{ padding: '16px 24px' }}>Corpus Contribution</th>
+                                    <th style={{ padding: '16px 24px' }}>Audit ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {contributions.length === 0 ? (
+                                    <tr><td colSpan="5" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 600 }}>No contribution history found.</td></tr>
+                                ) : (
+                                    contributions.map(c => (
+                                        <tr key={c.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }}>
+                                            <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontWeight: 600 }}>{c.date}</td>
+                                            <td style={{ padding: '16px 24px', fontWeight: 900, color: 'var(--secondary)' }}>{c.family_name}</td>
+                                            <td style={{ padding: '16px 24px' }}>
+                                                <span style={{ padding: '4px 10px', background: 'var(--bg-hover)', color: 'var(--secondary)', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800 }}>{c.type}</span>
+                                            </td>
+                                            <td style={{ padding: '16px 24px', fontWeight: 950, color: 'var(--success)' }}>₹{c.amount}</td>
+                                            <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>#{c.id}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>
@@ -587,65 +646,70 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
         const stats = accountOverview || { opening_balance: 0, total_monthly_collection: 0, total_expenses: 0, closing_balance: 0, expense_breakdown: [] };
 
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* 1. Summary Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                    <div style={{ background: 'var(--bg-card)', padding: '25px', borderRadius: '15px', borderLeft: '5px solid #3498db', boxShadow: 'var(--shadow)' }}>
-                        <small style={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Opening Balance</small>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '8px' }}>₹ {stats.opening_balance?.toLocaleString()}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
+                    <div className="premium-card" style={{ padding: '32px', background: 'white', borderTop: '6px solid var(--primary-blue)' }}>
+                        <small style={{ color: 'var(--text-muted)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Opening Corpus</small>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 950, color: 'var(--secondary)', marginTop: '8px', letterSpacing: '-0.03em' }}>₹{stats.opening_balance?.toLocaleString()}</div>
                     </div>
-                    <div style={{ background: 'var(--bg-card)', padding: '25px', borderRadius: '15px', borderLeft: '5px solid #2ecc71', boxShadow: 'var(--shadow)' }}>
-                        <small style={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Monthly Collection</small>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#2ecc71', marginTop: '8px' }}>+ ₹ {stats.total_monthly_collection?.toLocaleString()}</div>
+                    <div className="premium-card" style={{ padding: '32px', background: 'white', borderTop: '6px solid var(--success)' }}>
+                        <small style={{ color: 'var(--success)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Inward Flow</small>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 950, color: 'var(--success)', marginTop: '8px', letterSpacing: '-0.03em' }}>+ ₹{stats.total_monthly_collection?.toLocaleString()}</div>
                     </div>
-                    <div style={{ background: 'var(--bg-card)', padding: '25px', borderRadius: '15px', borderLeft: '5px solid #e74c3c', boxShadow: 'var(--shadow)' }}>
-                        <small style={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Total Expenses</small>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#e74c3c', marginTop: '8px' }}>- ₹ {stats.total_expenses?.toLocaleString()}</div>
+                    <div className="premium-card" style={{ padding: '32px', background: 'white', borderTop: '6px solid var(--danger)' }}>
+                        <small style={{ color: 'var(--danger)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Outward Flow</small>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 950, color: 'var(--danger)', marginTop: '8px', letterSpacing: '-0.03em' }}>- ₹{stats.total_expenses?.toLocaleString()}</div>
                     </div>
-                    <div style={{ background: 'var(--primary)', padding: '25px', borderRadius: '15px', boxShadow: '0 8px 20px rgba(255,153,51,0.3)', color: 'white' }}>
-                        <small style={{ opacity: 0.9, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}>Current Balance</small>
-                        <div style={{ fontSize: '1.8rem', fontWeight: 900, marginTop: '8px' }}>₹ {stats.closing_balance?.toLocaleString()}</div>
+                    <div className="premium-card" style={{ padding: '32px', background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)', color: 'white' }}>
+                        <small style={{ opacity: 0.9, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Current Liquidity</small>
+                        <div style={{ fontSize: '2.5rem', fontWeight: 950, marginTop: '8px', letterSpacing: '-0.03em' }}>₹{stats.closing_balance?.toLocaleString()}</div>
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '30px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                        <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)' }}>
-                            <h4 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontWeight: 800 }}>💰 Cash Flow Summary</h4>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--bg-page)', borderRadius: '10px' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Total Collected</span>
-                                    <span style={{ color: 'var(--success)', fontWeight: 800 }}>₹ {stats.total_collected?.toLocaleString()}</span>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr', gap: '32px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                        <div className="premium-card" style={{ padding: '32px', background: 'white' }}>
+                            <h4 style={{ margin: '0 0 24px 0', color: 'var(--secondary)', fontSize: '1.25rem', fontWeight: 950 }}>Corpus Flow Efficiency</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', background: 'var(--bg-page)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--success)' }}></div>
+                                        <span style={{ color: 'var(--secondary)', fontWeight: 800 }}>Aggregate Seva Funds</span>
+                                    </div>
+                                    <span style={{ color: 'var(--success)', fontWeight: 950, fontSize: '1.2rem' }}>₹{stats.total_collected?.toLocaleString()}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--bg-page)', borderRadius: '10px' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Total Expenses</span>
-                                    <span style={{ color: 'var(--danger)', fontWeight: 800 }}>₹ {stats.total_expenses?.toLocaleString()}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', background: 'var(--bg-page)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--danger)' }}></div>
+                                        <span style={{ color: 'var(--secondary)', fontWeight: 800 }}>Disbursed Assistance</span>
+                                    </div>
+                                    <span style={{ color: 'var(--danger)', fontWeight: 950, fontSize: '1.2rem' }}>₹{stats.total_expenses?.toLocaleString()}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--primary-blue)', borderRadius: '10px', color: 'white' }}>
-                                    <span style={{ fontWeight: 600 }}>Net Balance</span>
-                                    <span style={{ fontWeight: 800 }}>₹ {(stats.total_collected - stats.total_expenses)?.toLocaleString()}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px', background: 'var(--primary-blue)', borderRadius: '16px', color: 'white', boxShadow: '0 12px 24px rgba(59,130,246,0.3)' }}>
+                                    <span style={{ fontWeight: 900, fontSize: '1.1rem' }}>Net Available Balance</span>
+                                    <span style={{ fontWeight: 950, fontSize: '1.5rem' }}>₹{(stats.total_collected - stats.total_expenses)?.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)' }}>
-                            <h4 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontWeight: 800 }}>📊 Expense Distribution</h4>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div className="premium-card" style={{ padding: '32px', background: 'white' }}>
+                            <h4 style={{ margin: '0 0 24px 0', color: 'var(--secondary)', fontSize: '1.25rem', fontWeight: 950 }}>Distribution Breakdown</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 {stats.expense_breakdown?.map((ex, i) => (
                                     <div key={i}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                            <small style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '0.8rem' }}>{ex.category}</small>
-                                            <small style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>₹ {ex.amount?.toLocaleString()}</small>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                            <small style={{ fontWeight: 900, color: 'var(--secondary)', fontSize: '0.85rem' }}>{ex.category}</small>
+                                            <small style={{ color: 'var(--primary)', fontWeight: 900, fontSize: '0.85rem' }}>₹{ex.amount?.toLocaleString()}</small>
                                         </div>
-                                        <div style={{ width: '100%', height: '8px', background: 'var(--bg-page)', borderRadius: '10px', overflow: 'hidden' }}>
-                                            <div style={{ width: `${(ex.amount / (stats.total_expenses || 1)) * 100}%`, height: '100%', background: 'var(--primary-blue)', borderRadius: '10px' }} />
+                                        <div style={{ width: '100%', height: '12px', background: 'var(--bg-page)', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                                            <div style={{ width: `${(ex.amount / (stats.total_expenses || 1)) * 100}%`, height: '100%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary-glow)', borderRadius: '20px' }} />
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
-
                     {/* 4. Detailed Ledger */}
                     <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -1453,6 +1517,17 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
                             }}>
                                 <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }} />
                                 Active Profile
+                                {user?.is_founder && (
+                                    <span style={{ 
+                                        marginLeft: '8px',
+                                        paddingLeft: '8px',
+                                        borderLeft: '1px solid rgba(255,255,255,0.3)',
+                                        color: '#ffd700',
+                                        fontWeight: 900
+                                    }}>
+                                        FOUNDER
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -1819,7 +1894,194 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
         </div>
     );
 
+    const renderCommitteeDirectory = () => {
+        const COMMITTEE_POSITIONS = [
+            { id: 'president', label: 'President (अध्यक्ष)', icon: '👑', color: '#B8860B' },
+            { id: 'vice_president', label: 'Vice President (उपाध्यक्ष)', icon: '🏛️', color: '#CD7F32' },
+            { id: 'secretary', label: 'Secretary (सचिव)', icon: '📜', color: '#4A90E2' },
+            { id: 'treasurer', label: 'Treasurer (कोषाध्यक्ष)', icon: '💰', color: '#D4AF37' },
+            { id: 'executive_member', label: 'Executive Member', icon: '⚖️', color: '#607D8B' },
+            { id: 'coordinator', label: 'Coordinator (समन्वयक)', icon: '🤝', color: '#E67E22' },
+        ];
+
+        const committee = users.filter(u =>
+            COMMITTEE_POSITIONS.some(p => p.id === u.position) || u.role === 'admin' || u.role === 'super_admin'
+        );
+
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', animation: 'fadeIn 0.5s ease' }}>
+                <div style={{
+                    background: 'var(--bg-card)',
+                    padding: '40px',
+                    borderRadius: '30px',
+                    boxShadow: 'var(--shadow)',
+                    border: '1px solid var(--border-color)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '8px', background: 'linear-gradient(90deg, #F39C12, #E67E22)' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, color: 'var(--primary-blue)', letterSpacing: '-0.03em' }}>Committee Directory</h2>
+                            <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: 600 }}>Active office bearers currently serving</p>
+                        </div>
+
+                        {(user?.role === 'super_admin' || user?.role === 'admin') && communitiesList.length > 0 && (
+                            <div style={{ flex: '1', minWidth: '250px', maxWidth: '400px' }}>
+                                <select 
+                                    className="form-input"
+                                    value={committeeCommunityFilter}
+                                    onChange={(e) => setCommitteeCommunityFilter(e.target.value)}
+                                    style={{ width: '100%', padding: '12px 20px', borderRadius: '15px', border: '2px solid var(--border-color)', outline: 'none', background: 'var(--bg-page)', color: 'var(--text-main)', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    <option value="all">🌐 All Communities (Global)</option>
+                                    {communitiesList.map(c => (
+                                        <option key={c.id || c._id} value={c.id || c._id}>{c.name} ({c.society_code})</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        <div style={{
+                            background: 'var(--bg-page)',
+                            padding: '15px 30px',
+                            borderRadius: '20px',
+                            border: '1px solid var(--border-color)',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary-saffron)', lineHeight: 1 }}>{committee.length}</div>
+                            <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px', marginTop: '4px' }}>Total Leaders</div>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '35px' }}>
+                        {COMMITTEE_POSITIONS.map(pos => {
+                            const members = committee.filter(u => u.position === pos.id);
+                            if (members.length === 0) return null;
+
+                            return (
+                                <div key={pos.id} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        borderBottom: `2.5px solid ${pos.color}40`,
+                                        paddingBottom: '12px',
+                                        animation: 'fadeIn 0.8s ease'
+                                    }}>
+                                        <div style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '12px',
+                                            background: `${pos.color}15`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '1.2rem'
+                                        }}>
+                                            {pos.icon}
+                                        </div>
+                                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: pos.color, textTransform: 'uppercase', letterSpacing: '1px' }}>{pos.label}</h3>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                        {members.map(m => (
+                                            <div
+                                                key={m.id}
+                                                style={{
+                                                    background: 'var(--bg-card)',
+                                                    padding: '24px',
+                                                    borderRadius: '24px',
+                                                    border: '1.5px solid var(--border-color)',
+                                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '20px',
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.transform = 'translateY(-6px)';
+                                                    e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.08)';
+                                                    e.currentTarget.style.borderColor = pos.color;
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)';
+                                                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: '65px',
+                                                    height: '65px',
+                                                    borderRadius: '20px',
+                                                    background: m.profile_photo ? 'none' : `linear-gradient(135deg, ${pos.color} 0%, #1a1a1a 100%)`,
+                                                    overflow: 'hidden',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '1.6rem',
+                                                    fontWeight: 900,
+                                                    color: 'white',
+                                                    border: `3px solid white`,
+                                                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                                                }}>
+                                                    {m.profile_photo ? (
+                                                        <img src={m.profile_photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                                                    ) : m.name.charAt(0)}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-main)', marginBottom: '5px' }}>{m.name}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
+                                                        <Smartphone size={16} /> {m.phone}
+                                                    </div>
+                                                </div>
+                                                <div style={{
+                                                    background: 'var(--bg-page)',
+                                                    padding: '10px',
+                                                    borderRadius: '12px',
+                                                    border: '1px solid var(--border-color)',
+                                                    cursor: 'pointer'
+                                                }} onClick={() => window.open(`tel:${m.phone}`)} title="Call Member">
+                                                    📞
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Technical Admin Section */}
+                    {committee.some(u => (u.role === 'admin' || u.role === 'super_admin') && !u.position) && (
+                        <div style={{ marginTop: '60px', padding: '40px', background: 'var(--bg-page)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
+                                <Shield size={24} color="#64748B" />
+                                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>Technical & Admin Support</h3>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                {committee.filter(u => (u.role === 'admin' || u.role === 'super_admin') && !u.position).map(m => (
+                                    <div key={m.id} style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '18px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                        <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 900, color: '#64748B' }}>
+                                            {m.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>{m.name}</div>
+                                            <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#6366F1', marginTop: '2px' }}>{m.role.replace('_', ' ')}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     const renderRoleManagement = () => {
+        const [searchQuery, setSearchQuery] = useState('');
+
         const getRoleBadge = (u) => {
             const COMMITTEE_POSITIONS = ['president', 'vice_president', 'secretary', 'treasurer', 'executive_member', 'coordinator'];
             const isCommittee = COMMITTEE_POSITIONS.includes(u.position);
@@ -1866,24 +2128,64 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                 <div style={{ background: 'var(--bg-card)', padding: '25px', borderRadius: '12px', boxShadow: 'var(--shadow)', border: '1px solid var(--border-color)' }}>
-                    <h3 style={{ marginBottom: '20px', color: 'var(--text-main)' }}>🔐 Role & Committee Management</h3>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ background: 'var(--bg-page)', textAlign: 'left', borderBottom: '2px solid var(--border-color)', color: 'var(--text-muted)' }}>
-                                    <th style={{ padding: '15px' }}>User Details</th>
-                                    <th style={{ padding: '15px' }}>Current Designation</th>
-                                    <th style={{ padding: '15px' }}>Change Role</th>
-                                    <th style={{ padding: '15px' }}>Assign Official Post</th>
-                                    <th style={{ padding: '15px' }}>Status</th>
-                                </tr>
-                            </thead>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+                            <h3 style={{ margin: 0, color: 'var(--text-main)', fontWeight: 800 }}>🔐 Role & Committee Management</h3>
+                            
+                            {(user?.role === 'super_admin' || user?.role === 'admin') && communitiesList.length > 0 && (
+                                <div style={{ flex: '1', minWidth: '200px', maxWidth: '300px' }}>
+                                    <select 
+                                        className="form-input"
+                                        value={committeeCommunityFilter}
+                                        onChange={(e) => setCommitteeCommunityFilter(e.target.value)}
+                                        style={{ width: '100%', padding: '10px 15px', borderRadius: '10px', border: '1.5px solid var(--border-color)', outline: 'none', background: 'var(--bg-page)', color: 'var(--text-main)', fontWeight: 600 }}
+                                    >
+                                        <option value="all">🌐 All Communities (Global)</option>
+                                        {communitiesList.map(c => (
+                                            <option key={c.id || c._id} value={c.id || c._id}>{c.name} ({c.society_code})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <div style={{ position: 'relative', width: '300px' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name or phone..."
+                                    style={{ width: '100%', padding: '10px 15px 10px 40px', borderRadius: '10px', border: '1.5px solid var(--border-color)', background: 'var(--bg-page)', fontSize: '0.9rem' }}
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                />
+                                <Users size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                            </div>
+                        </div>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--bg-page)', textAlign: 'left', borderBottom: '2px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                                        <th style={{ padding: '15px' }}>User Details</th>
+                                        <th style={{ padding: '15px' }}>Community</th>
+                                        <th style={{ padding: '15px' }}>Current Designation</th>
+                                        <th style={{ padding: '15px' }}>Change Role</th>
+                                        <th style={{ padding: '15px' }}>Assign Official Post</th>
+                                        <th style={{ padding: '15px' }}>Status</th>
+                                    </tr>
+                                </thead>
                             <tbody>
-                                {users.map(u => (
+                                {users
+                                    .filter(u =>
+                                        u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        u.phone?.includes(searchQuery)
+                                    )
+                                    .map(u => (
                                     <tr key={u.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '15px' }}>
                                             <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{u.name}</div>
                                             <small style={{ color: 'var(--text-muted)' }}>{u.phone}</small>
+                                        </td>
+                                        <td style={{ padding: '15px' }}>
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                                {communitiesList.find(c => c.id === u.community_id || c._id === u.community_id)?.name || 'Unknown'}
+                                            </span>
                                         </td>
                                         <td style={{ padding: '15px' }}>{getRoleBadge(u)}</td>
                                         <td style={{ padding: '15px' }}>
@@ -2740,12 +3042,15 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
                                                     </div>
                                                     <div style={{ position: 'absolute', bottom: 0, right: 0, background: '#FFD700', width: '28px', height: '28px', borderRadius: '50%', border: '3px solid var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>★</div>
                                                 </div>
-                                                <h4 style={{ margin: '0 0 5px 0', color: 'var(--text-main)', fontWeight: 800, fontSize: '1.1rem' }}>{cp.name}</h4>
+                                                <h4 style={{ margin: '0 0 5px 0', color: 'var(--text-main)', fontWeight: 800, fontSize: '1.1rem' }}>
+                                                    {cp.name}
+                                                    {cp.is_founder && <span style={{ marginLeft: '6px', fontSize: '0.6rem', color: '#d97706', verticalAlign: 'middle' }}>🛡️ FOUNDER</span>}
+                                                </h4>
                                                 <div style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700, marginBottom: '4px' }}>
                                                     {String(cp.position || '').replace(/_/g, ' ').toUpperCase()}
                                                 </div>
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '15px', fontStyle: 'italic' }}>
-                                                    {cp.role === 'admin' ? 'Administrator' : 'Committee Member'}
+                                                    {cp.role === 'super_admin' ? 'Foundation Admin' : (cp.role === 'admin' ? 'Administrator' : 'Committee Member')}
                                                 </div>
 
                                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '12px' }}>
@@ -3117,7 +3422,7 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
                         </div>
                         <div>
                             <h2 style={{ margin: 0, color: '#1e293b', fontSize: '1.5rem', fontWeight: 800 }}>Assigned Coordinator</h2>
-                            <p style={{ color: '#64748b', margin: '4px 0 0 0' }}>Your primary point of contact for all administrative matters.</p>
+                            <p style={{ margin: '4px 0 0 0', color: '#64748b' }}>Your primary point of contact for all administrative matters.</p>
                         </div>
                     </div>
 
@@ -3212,6 +3517,7 @@ const CommonDashboardContent = ({ activeTab, role, user, formOptions, familyData
             case 'audit': return renderAudit();
             case 'inquiries': return renderInquiries();
             case 'roles': return renderRoleManagement();
+            case 'committee-members': return renderCommitteeDirectory();
             case 'elections': return renderElections();
             case 'governance': return renderGovernance();
             case 'history': return renderHistory();
