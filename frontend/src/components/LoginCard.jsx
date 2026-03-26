@@ -38,17 +38,17 @@ const LoginCard = ({ isEmbedded = false }) => {
 
         if (extractedCode) {
             api.getCommunityByCode(extractedCode)
-                .then(res => setCommunityInfo(res.data))
+                .then(res => setCommunityInfo(typeof res.data === 'object' && res.data.name ? res.data : null))
                 .catch(() => setCommunityInfo(null));
         } else if (isPotentialCode) {
             api.getCommunityByCode(identifier.toUpperCase())
-                .then(res => setCommunityInfo(res.data))
+                .then(res => setCommunityInfo(typeof res.data === 'object' && res.data.name ? res.data : null))
                 .catch(() => setCommunityInfo(null));
         } else if (isPotentialPhone || isPotentialEmail) {
             // New Backend Lookup by Phone/Email
             api.lookupCommunity(identifier)
                 .then(res => {
-                    if (res.data) setCommunityInfo(res.data);
+                    if (res.data && typeof res.data === 'object' && res.data.name) setCommunityInfo(res.data);
                     else setCommunityInfo(null);
                 })
                 .catch(() => setCommunityInfo(null));
