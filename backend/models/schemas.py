@@ -19,22 +19,31 @@ class Address(BaseModel):
     pin_code: str
     landmark: Optional[str] = None
 
+class EducationDetail(BaseModel):
+    level: str # e.g. 10th, 12th, Graduation
+    board_university: str
+    year: str
+    result: str # Percentage/CGPA
+
 class MemberDetails(BaseModel):
     full_name: str
+    full_name_hindi: Optional[str] = None
     father_husband_name: Optional[str] = None
+    father_husband_name_hindi: Optional[str] = None
     relation: str
     gender: str
     dob: str # YYYY-MM-DD
     marital_status: str
     
     # Education
-    education_level: Optional[str] = None
+    education_level: Optional[str] = None # Current/Highest broadly
     education_school_college: Optional[str] = None
     education_class: Optional[str] = None
+    education_history: List[EducationDetail] = []
     needs_scholarship: bool = False
     
     # Occupation
-    occupation: str # Kept for backward compat
+    occupation: str 
     occupation_type: Optional[str] = None
     occupation_sector: Optional[str] = None
     designation: Optional[str] = None
@@ -51,10 +60,17 @@ class MemberDetails(BaseModel):
     illness_details: Optional[str] = None
     
     is_head: bool = False
+    
+    # New Functional Fields
+    qualifications: List[str] = []
+    specialization_courses: List[str] = []
+    skills: List[str] = []
 
 class FamilyHead(BaseModel):
     full_name: str
+    full_name_hindi: Optional[str] = None
     father_name: str
+    father_name_hindi: Optional[str] = None
     gender: str
     dob: str
     marital_status: str
@@ -84,6 +100,12 @@ class FamilyHead(BaseModel):
     nominee_mobile: Optional[str] = None
     emergency_name: Optional[str] = None
     emergency_number: Optional[str] = None
+    
+    # New Functional Fields
+    education_history: List[EducationDetail] = []
+    qualifications: List[str] = []
+    specialization_courses: List[str] = []
+    skills: List[str] = []
 
 class NomineeItem(BaseModel):
     is_family_member: bool = True
@@ -143,6 +165,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     recommendation_token: Optional[str] = None
+    community_id: Optional[str] = None  # ID of the community to join
 
 class UserInDB(UserBase):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)

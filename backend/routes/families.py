@@ -12,16 +12,18 @@ from bson import ObjectId
 
 router = APIRouter()
 
-def parse_form_data(form_data):
+from typing import List, Dict, Any
+
+def parse_form_data(form_data: Any) -> Dict[str, Any]:
     """Safely parse form_data from DB which could be JSON string, dict, or None."""
     if form_data is None:
         return {}
     try:
         if isinstance(form_data, str):
-            return json.loads(form_data)
+            return dict(json.loads(form_data))
         if isinstance(form_data, dict):
-            return form_data
-    except:
+            return dict(form_data)
+    except Exception:
         pass
     return {}
 
@@ -76,7 +78,7 @@ async def get_my_family(current_user: dict = Depends(get_current_user)):
 
     try:
         form_data = family.get("form_data")
-        data = parse_form_data(form_data)
+        data: Dict[str, Any] = parse_form_data(form_data)
 
         data["_id"] = str(family.get("_id"))
         data["status"] = family.get("status")
@@ -257,6 +259,30 @@ async def complete_profile(family: FamilyRegistration, current_user: dict = Depe
         }}
     )
     return {"message": "Profile submitted successfully for verification."}
+
+@router.post("/save-progress", response_model=dict)
+async def save_progress(family: dict = Body(...), current_user: dict = Depends(get_current_user)):
+    user_id = current_user.get("id")
+    # We allow saving even if already pending, or just incomplete
+    existing_fam = await families_collection.find_one({"user_id": user_id})
+    if not existing_fam:
+        raise HTTPException(status_code=404, detail="Family record not found")
+
+    # Update head_name if present in partial data
+    update_data: Dict[str, Any] = {
+        "form_data": json.dumps(family, default=str),
+        "updated_at": datetime.utcnow()
+    }
+    
+    head_details = family.get("head_details", {})
+    if isinstance(head_details, dict) and head_details.get("full_name"):
+        update_data["head_name"] = head_details.get("full_name")
+
+    await families_collection.update_one(
+        {"_id": existing_fam["_id"]},
+        {"$set": update_data}
+    )
+    return {"message": "Progress saved successfully."}
 
 @router.post("/register", response_model=dict)
 async def register_family(family: FamilyRegistration):
@@ -455,12 +481,28 @@ async def approve_family_application(
     if family.get("status") == "Approved":
         return {"message": "Family is already approved."}
         
-    # 2. Generate Family ID (Format: F-Sequence)
-    # Get count of approved families for sequence
-    count = await families_collection.count_documents({"status": "Approved"})
+    # 2. Generate Family ID (Format: SOCIETYCODE-F-Sequence)
+    # Get count of approved families FOR THIS COMMUNITY for sequence
+    community_id = family.get("community_id")
+    society_code = "ASS"  # Fallback default
+
+    if community_id:
+        try:
+            from database import communities_collection
+            from bson import ObjectId as ObjId
+            community = await communities_collection.find_one({"_id": ObjId(community_id)})
+            if community and community.get("society_code"):
+                society_code = community.get("society_code")
+        except Exception as e:
+            print(f"Could not fetch society_code: {e}")
+
+    # Count approved families scoped to this community
+    count_query = {"status": "Approved"}
+    if community_id:
+        count_query["community_id"] = community_id
+    count = await families_collection.count_documents(count_query)
     seq = count + 1
-    # year = datetime.utcnow().year # Removed year from format
-    family_unique_id = f"F-{seq:04d}"
+    family_unique_id = f"{society_code}-F-{seq:04d}"
     
     # 3. Process Members and Generate Member IDs
     form_data = family.get("form_data")

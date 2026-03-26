@@ -1,14 +1,22 @@
+# Core Framework
 fastapi
-uvicorn
-motor
-python-dotenv
+uvicorn[standard]
+
+# Database
+motor           # Async MongoDB driver
+dnspython       # Required for MongoDB Atlas SRV URIs
+
+# Auth & Security
 python-jose[cryptography]
 bcrypt
+passlib[bcrypt]
+
+# Config & Utilities
+python-dotenv
 python-multipart
-pydantic
-anyio
+pydantic[email]
 email-validator
 
+# HTTP & Networking
 httpx
-dnspython
-
+anyio

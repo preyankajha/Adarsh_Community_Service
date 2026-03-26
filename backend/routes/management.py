@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from database import users_collection, families_collection, audit_logs_collection
 from dependencies import get_president_user, get_committee_user
-from typing import List
+from typing import List, Optional
 import datetime
 from utils.audit import log_action
 from bson import ObjectId
@@ -9,15 +9,29 @@ from bson import ObjectId
 router = APIRouter()
 
 @router.get("/users", response_model=List[dict])
-async def get_all_users(current_user: dict = Depends(get_committee_user)):
+async def get_all_users(community_id: Optional[str] = None, current_user: dict = Depends(get_committee_user)):
+    query = {}
+    if community_id and community_id != "all":
+        query["community_id"] = community_id
+    elif current_user.get("role") != "super_admin":
+        query["community_id"] = current_user.get("community_id")
+    
     # Optimized: Fetch all families once to avoid N+1 queries
-    families_cursor = families_collection.find({}, {"head_name": 1, "user_id": 1, "_id": 1})
+    families_cursor = families_collection.find(query, {"head_name": 1, "user_id": 1, "_id": 1})
     families_list = await families_cursor.to_list(length=10000)
     
-    fam_by_id = {str(f["_id"]): f.get("head_name") for f in families_list}
-    fam_by_user = {f.get("user_id"): f.get("head_name") for f in families_list if f.get("user_id")}
+    # Use string conversion systematically to respect Pyre dict typing
+    fam_by_id = {}
+    fam_by_user = {}
+    for f in families_list:
+        fid = str(f.get("_id", ""))
+        head = str(f.get("head_name", ""))
+        uid = str(f.get("user_id", ""))
+        
+        if fid: fam_by_id[fid] = head
+        if uid: fam_by_user[uid] = head
 
-    cursor = users_collection.find()
+    cursor = users_collection.find(query)
     users = await cursor.to_list(length=1000)
     result = []
     for u in users:

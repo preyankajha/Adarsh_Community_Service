@@ -10,7 +10,7 @@ else:
     load_dotenv() # Fallback to default behavior
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "jagdamba_samiti")
+DB_NAME = os.getenv("DB_NAME", "sanatan_swabhiman_samiti")
 
 client = AsyncIOMotorClient(MONGO_URI)
 db = client[DB_NAME]
@@ -45,4 +45,5 @@ recommendations_collection = db.get_collection("recommendations")
 family_update_requests_collection = db.get_collection("family_update_requests")
 collection_campaigns_collection = db.get_collection("collection_campaigns")
 contribution_proofs_collection = db.get_collection("contribution_proofs")
+communities_collection = db.get_collection("communities")
 

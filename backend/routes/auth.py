@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Body, File, UploadFile
 from models.schemas import UserCreate, Token
-from database import users_collection, families_collection
+from database import users_collection, families_collection, communities_collection
 from utils.security import get_password_hash, verify_password, create_access_token
 from dependencies import get_current_user
 import json
@@ -13,9 +13,16 @@ router = APIRouter()
 
 @router.post("/register", response_model=dict)
 async def register(user: UserCreate):
-    existing_user = await users_collection.find_one({"phone": user.phone})
+    # Resolve community_id
+    community_id = user.community_id if user.community_id else None
+    if not community_id:
+        default_comm = await communities_collection.find_one({"slug": "jagdamba-samiti"})
+        if default_comm:
+            community_id = str(default_comm["_id"])
+    
+    existing_user = await users_collection.find_one({"phone": user.phone, "community_id": community_id})
     if existing_user:
-        raise HTTPException(status_code=400, detail="Phone number already registered")
+        raise HTTPException(status_code=400, detail="Phone number already registered in this society")
     
     hashed_password = get_password_hash(user.password)
     
@@ -27,6 +34,7 @@ async def register(user: UserCreate):
         "position": "none",
         "hashed_password": hashed_password,
         "is_active": True,
+        "community_id": community_id,
         "created_at": datetime.datetime.utcnow()
     }
     
@@ -35,11 +43,25 @@ async def register(user: UserCreate):
 
 @router.post("/signup", response_model=dict)
 async def signup(user: UserCreate):
-    existing_user = await users_collection.find_one({"phone": user.phone})
+    # Resolve community_id: use provided, else fallback to first active community
+    community_id = user.community_id if user.community_id else None
+    if not community_id:
+        default_comm = await communities_collection.find_one({"is_active": True})
+        if default_comm:
+            community_id = str(default_comm["_id"])
+
+    existing_user = await users_collection.find_one({"phone": user.phone, "community_id": community_id})
     if existing_user:
-        raise HTTPException(status_code=400, detail="Phone number already registered")
+        raise HTTPException(status_code=400, detail="Phone number already registered in this society")
     
     hashed_password = get_password_hash(user.password)
+
+    # Resolve community_id: use provided, else fallback to first active community
+    community_id = user.community_id if user.community_id else None
+    if not community_id:
+        default_comm = await communities_collection.find_one({"is_active": True})
+        if default_comm:
+            community_id = str(default_comm["_id"])
     
     # 1. Create User
     new_user = {
@@ -48,6 +70,7 @@ async def signup(user: UserCreate):
         "role": "family_head",
         "hashed_password": hashed_password,
         "is_active": True,
+        "community_id": community_id,
         "created_at": datetime.datetime.utcnow()
     }
     ur = await users_collection.insert_one(new_user)
@@ -81,6 +104,7 @@ async def signup(user: UserCreate):
         "head_name": user.name,
         "status": "Profile Incomplete",
         "verification_stage": "Not Submitted",
+        "community_id": community_id,
         "created_at": datetime.datetime.utcnow(),
         "form_data": json.dumps(rec_details) if rec_details else None
     }
@@ -91,16 +115,84 @@ async def signup(user: UserCreate):
     
     return {"message": "Signup successful! You can now login and complete your profile."}
 
-@router.post("/login", response_model=Token)
+@router.get("/community-lookup/{identifier}")
+async def lookup_community(identifier: str):
+    # Search for user by phone or email
+    user = await users_collection.find_one({"$or": [{"phone": identifier}, {"email": identifier}]})
+    
+    if user and user.get("community_id"):
+        comm = await communities_collection.find_one({"_id": ObjectId(user.get("community_id"))})
+        if comm:
+            return {
+                "name": comm.get("name"),
+                "society_code": comm.get("society_code"),
+                "city": comm.get("city"),
+                "state": comm.get("state")
+            }
+    
+    # Handle direct society code lookup
+    comm = await communities_collection.find_one({"society_code": identifier.upper()})
+    if comm:
+        return {
+            "name": comm.get("name"),
+            "society_code": comm.get("society_code"),
+            "city": comm.get("city"),
+            "state": comm.get("state")
+        }
+        
+    return None
+
+@router.post("/login")
 async def login(credentials: dict):
     identifier = credentials.get('phone') # Accepts Phone OR Member ID
     password = credentials.get('password')
     requested_role = credentials.get('role') # User selected role
+    requested_community_id = credentials.get('community_id')
     
     # 1. Try to find User by Phone or Email (Normal Login)
+    # Fetch all matching users across all societies
+    matching_users = await users_collection.find({"$or": [{"phone": identifier}, {"email": identifier}]}).to_list(length=20)
+    
     user = None
-    # Always check users table first, even for family_member requests
-    user = await users_collection.find_one({"$or": [{"phone": identifier}, {"email": identifier}]})
+    
+    # NEW: If multiple societies found, check which one matches the password
+    if len(matching_users) > 1 and not requested_community_id:
+        authenticated_users = []
+        for u in matching_users:
+            if u and verify_password(password, u.get("hashed_password")):
+                authenticated_users.append(u)
+        
+        if len(authenticated_users) == 1:
+            # Exactly one matches password, proceed with this user
+            user = authenticated_users[0]
+        elif len(authenticated_users) > 1:
+            # Multiple match the same password, let the user choose
+            communities_list = []
+            for u in authenticated_users:
+                if u and u.get("community_id"):
+                    comm_id = u.get("community_id")
+                    if comm_id:
+                        comm = await communities_collection.find_one({"_id": ObjectId(comm_id)})
+                        if comm:
+                            communities_list.append({
+                                "id": str(comm["_id"]),
+                                "name": comm.get("name"),
+                                "society_code": comm.get("society_code"),
+                                "city": comm.get("city")
+                            })
+            return {
+                "status": "multiple_societies",
+                "message": "Multiple accounts found with this password. Please select a society.",
+                "communities": communities_list
+            }
+        else:
+            # No user matches the password
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    
+    if requested_community_id:
+        user = next((u for u in matching_users if str(u.get("community_id")) == requested_community_id), None)
+    elif len(matching_users) == 1:
+        user = matching_users[0]
     
     if user:
         # Check if the user's actual role/position matches the requested role
@@ -124,8 +216,16 @@ async def login(credentials: dict):
                 "email": user.get("email"),
                 "role": "family_member",  # Return as family_member for member dashboard
                 "position": "none",
-                "id": user_id_str 
+                "id": user_id_str,
+                "is_founder": user.get("is_founder", False),
+                "community_id": user.get("community_id")
             }
+            # Add community name if possible
+            if user.get("community_id"):
+                comm = await communities_collection.find_one({"_id": ObjectId(user.get("community_id"))})
+                if comm:
+                    user_response["community_name"] = comm.get("name")
+            
             return {"access_token": access_token, "token_type": "bearer", "user": user_response}
         
         if requested_role and user_role != requested_role:
@@ -158,8 +258,16 @@ async def login(credentials: dict):
             "email": user.get("email"),
             "role": effective_role, 
             "position": user_position,
-            "id": user_id_str 
+            "id": user_id_str,
+            "is_founder": user.get("is_founder", False),
+            "community_id": user.get("community_id")
         }
+        # Add community name if possible
+        if user.get("community_id"):
+            comm = await communities_collection.find_one({"_id": ObjectId(user.get("community_id"))})
+            if comm:
+                user_response["community_name"] = comm.get("name")
+                
         return {"access_token": access_token, "token_type": "bearer", "user": user_response}
 
 
